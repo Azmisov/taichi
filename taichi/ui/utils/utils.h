@@ -178,8 +178,10 @@ inline std::string button_id_to_name(int id) {
   if (keys.find(id) != keys.end()) {
     return keys.at(id);
   } else {
-    throw std::runtime_error(std::string("unrecognized id: ") +
-                             std::to_string(id));
+    // Fallback: return "Key_<id>" instead of throwing for unknown keys.
+    // This ensures numpad, function keys, and other unmapped keys still
+    // generate events that users can match on.
+    return std::string("Key_") + std::to_string(id);
   }
 }
 #endif
