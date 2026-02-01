@@ -57,6 +57,13 @@ float GuiMetal::abs_y(float y) { return y * heightBeforeDPIScale; }
 void GuiMetal::begin(const std::string &name, float x, float y, float width,
                      float height, bool movable, bool resizable,
                      bool collapsible) {
+  // Update window dimensions when locked, so programmatic updates use current
+  // window size
+  if ((!movable || !resizable) && app_context_->config.show_window) {
+    glfwGetWindowSize(app_context_->taichi_window(), &widthBeforeDPIScale,
+                      &heightBeforeDPIScale);
+  }
+
   // Set position: Always if locked, Once if unlocked
   ImGuiCond pos_cond = movable ? ImGuiCond_Once : ImGuiCond_Always;
   ImGui::SetNextWindowPos(ImVec2(abs_x(x), abs_y(y)), pos_cond);
