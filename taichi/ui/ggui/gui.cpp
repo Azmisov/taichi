@@ -153,6 +153,20 @@ void Gui::begin(const std::string &name,
     return;
   }
 
+  // Update window dimensions when locked, so programmatic updates use current
+  // window size
+  if ((!movable || !resizable) && app_context_->config.show_window) {
+#ifdef ANDROID
+    widthBeforeDPIScale =
+        (int)ANativeWindow_getWidth(app_context_->taichi_window());
+    heightBeforeDPIScale =
+        (int)ANativeWindow_getHeight(app_context_->taichi_window());
+#else
+    glfwGetWindowSize(app_context_->taichi_window(), &widthBeforeDPIScale,
+                      &heightBeforeDPIScale);
+#endif
+  }
+
   // Set position: Always if locked, Once if unlocked
   ImGuiCond pos_cond = movable ? ImGuiCond_Once : ImGuiCond_Always;
   ImGui::SetNextWindowPos(ImVec2(abs_x(x), abs_y(y)), pos_cond);
