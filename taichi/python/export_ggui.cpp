@@ -197,6 +197,16 @@ struct PyGui {
     glm::vec4 new_color = gui->color_edit_4(name, old_color);
     return vec4_to_tuple(new_color);
   }
+  py::tuple color_picker_3(std::string name, py::tuple old_value) {
+    glm::vec3 old_color = tuple_to_vec3(old_value);
+    glm::vec3 new_color = gui->color_picker_3(name, old_color);
+    return vec3_to_tuple(new_color);
+  }
+  py::tuple color_picker_4(std::string name, py::tuple old_value) {
+    glm::vec4 old_color = tuple_to_vec4(old_value);
+    glm::vec4 new_color = gui->color_picker_4(name, old_color);
+    return vec4_to_tuple(new_color);
+  }
   bool button(std::string name) {
     return gui->button(name);
   }
@@ -1013,6 +1023,8 @@ void export_ggui(py::module &m) {
       .def("slider_float4", &PyGui::slider_float4)
       .def("color_edit_3", &PyGui::color_edit_3)
       .def("color_edit_4", &PyGui::color_edit_4)
+      .def("color_picker_3", &PyGui::color_picker_3)
+      .def("color_picker_4", &PyGui::color_picker_4)
       .def("button", &PyGui::button)
       .def("input_int", &PyGui::input_int)
       .def("input_int2", &PyGui::input_int2)

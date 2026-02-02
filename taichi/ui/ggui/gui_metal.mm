@@ -147,6 +147,16 @@ glm::vec4 GuiMetal::color_edit_4(const std::string &name, glm::vec4 old_value) {
   ImGui::ColorEdit4(name.c_str(), (float *)&old_value);
   return old_value;
 }
+glm::vec3 GuiMetal::color_picker_3(const std::string &name,
+                                   glm::vec3 old_value) {
+  ImGui::ColorPicker3(name.c_str(), (float *)&old_value);
+  return old_value;
+}
+glm::vec4 GuiMetal::color_picker_4(const std::string &name,
+                                   glm::vec4 old_value) {
+  ImGui::ColorPicker4(name.c_str(), (float *)&old_value);
+  return old_value;
+}
 bool GuiMetal::button(const std::string &text) {
   return ImGui::Button(text.c_str());
 }

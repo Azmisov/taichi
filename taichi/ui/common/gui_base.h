@@ -55,6 +55,10 @@ class GuiBase {
                                  glm::vec3 old_value) = 0;
   virtual glm::vec4 color_edit_4(const std::string &name,
                                  glm::vec4 old_value) = 0;
+  virtual glm::vec3 color_picker_3(const std::string &name,
+                                   glm::vec3 old_value) = 0;
+  virtual glm::vec4 color_picker_4(const std::string &name,
+                                   glm::vec4 old_value) = 0;
   virtual bool button(const std::string &text) = 0;
   virtual int combo(const std::string &label,
                     int current_item,
