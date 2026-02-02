@@ -277,3 +277,164 @@ class Gui:
             fraction (float): Progress value between 0.0 and 1.0.
         """
         self.gui.progress_bar(fraction)
+
+    def collapsing_header(self, label):
+        """A collapsible header that reveals content when expanded.
+
+        Args:
+            label (str): Label for the header.
+
+        Returns:
+            bool: True if the header is expanded, False if collapsed.
+
+        Example::
+
+            if gui.collapsing_header("Advanced Settings"):
+                gui.slider_float("Detail", detail, 0, 1)
+        """
+        return self.gui.collapsing_header(label)
+
+    def selectable(self, label, selected=False):
+        """A selectable item (like a list entry).
+
+        Args:
+            label (str): Label for the item.
+            selected (bool): Whether the item is currently selected.
+
+        Returns:
+            bool: The new selected state (toggled if clicked).
+        """
+        return self.gui.selectable(label, selected)
+
+    def radio_button(self, label, active):
+        """A radio button.
+
+        Args:
+            label (str): Label for the button.
+            active (bool): Whether this option is currently selected.
+
+        Returns:
+            bool: True if clicked (use to update selection state).
+
+        Example::
+
+            if gui.radio_button("Option A", choice == 0):
+                choice = 0
+            if gui.radio_button("Option B", choice == 1):
+                choice = 1
+        """
+        return self.gui.radio_button(label, active)
+
+    def listbox(self, label, current_index, items, height_in_items=-1):
+        """A listbox for selecting from a tuple of items.
+
+        Args:
+            label (str): Label for the listbox.
+            current_index (int): Currently selected index (0-based).
+            items (tuple[str, ...]): Tuple of string options.
+            height_in_items (int): Number of items to show (-1 for default).
+
+        Returns:
+            int: The newly selected index.
+
+        Note:
+            Like combo(), uses caching for tuple→string conversion.
+            Define items as module-level constants for best performance.
+        """
+        return self.gui.listbox(label, current_index, items, height_in_items)
+
+    def begin_tab_bar(self, bar_id):
+        """Begin a tab bar (low-level).
+
+        Args:
+            bar_id (str): Unique identifier for the tab bar.
+
+        Returns:
+            bool: True if the tab bar is visible.
+
+        Note:
+            Must call end_tab_bar() if this returns True.
+            Consider using tab_bar() generator instead.
+        """
+        return self.gui.begin_tab_bar(bar_id)
+
+    def end_tab_bar(self):
+        """End a tab bar (low-level).
+
+        Only call this if begin_tab_bar() returned True.
+        """
+        self.gui.end_tab_bar()
+
+    def begin_tab_item(self, label):
+        """Begin a tab item (low-level).
+
+        Args:
+            label (str): Label for the tab.
+
+        Returns:
+            bool: True if this tab is selected.
+
+        Note:
+            Must call end_tab_item() if this returns True.
+            Consider using tab_item() generator instead.
+        """
+        return self.gui.begin_tab_item(label)
+
+    def end_tab_item(self):
+        """End a tab item (low-level).
+
+        Only call this if begin_tab_item() returned True.
+        """
+        self.gui.end_tab_item()
+
+    def tab_bar(self, bar_id):
+        """Tab bar container (generator).
+
+        Use with a for loop - the body runs only if the tab bar is visible,
+        and end_tab_bar is called automatically.
+
+        Args:
+            bar_id (str): Unique identifier for the tab bar.
+
+        Yields:
+            Nothing, but loop body executes only if visible.
+
+        Example::
+
+            for _ in gui.tab_bar("my_tabs"):
+                for _ in gui.tab_item("Tab 1"):
+                    gui.text("Content for tab 1")
+                for _ in gui.tab_item("Tab 2"):
+                    gui.text("Content for tab 2")
+        """
+        if self.gui.begin_tab_bar(bar_id):
+            try:
+                yield
+            finally:
+                self.gui.end_tab_bar()
+
+    def tab_item(self, label):
+        """Tab item (generator).
+
+        Use with a for loop inside tab_bar - the body runs only if this tab
+        is selected, and end_tab_item is called automatically.
+
+        Args:
+            label (str): Label for the tab.
+
+        Yields:
+            Nothing, but loop body executes only if tab is selected.
+
+        Example::
+
+            for _ in gui.tab_bar("settings"):
+                for _ in gui.tab_item("General"):
+                    gui.checkbox("Enable feature", enabled)
+                for _ in gui.tab_item("Advanced"):
+                    gui.slider_int("Level", level, 1, 10)
+        """
+        if self.gui.begin_tab_item(label):
+            try:
+                yield
+            finally:
+                self.gui.end_tab_item()

@@ -314,6 +314,68 @@ void Gui::progress_bar(float fraction) {
   ImGui::ProgressBar(fraction);
 }
 
+bool Gui::collapsing_header(const std::string &label) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::CollapsingHeader(label.c_str());
+}
+
+bool Gui::selectable(const std::string &label, bool selected) {
+  if (!initialized()) {
+    return selected;
+  }
+  ImGui::Selectable(label.c_str(), &selected);
+  return selected;
+}
+
+bool Gui::radio_button(const std::string &label, bool active) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::RadioButton(label.c_str(), active);
+}
+
+int Gui::listbox(const std::string &label,
+                 int current_item,
+                 const std::vector<const char *> &items,
+                 int height_in_items) {
+  if (!initialized()) {
+    return current_item;
+  }
+  ImGui::ListBox(label.c_str(), &current_item, items.data(),
+                 static_cast<int>(items.size()), height_in_items);
+  return current_item;
+}
+
+bool Gui::begin_tab_bar(const std::string &id) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::BeginTabBar(id.c_str());
+}
+
+void Gui::end_tab_bar() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::EndTabBar();
+}
+
+bool Gui::begin_tab_item(const std::string &label) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::BeginTabItem(label.c_str());
+}
+
+void Gui::end_tab_item() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::EndTabItem();
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();

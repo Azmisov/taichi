@@ -49,6 +49,17 @@ class GuiBase {
   virtual void indent() = 0;
   virtual void unindent() = 0;
   virtual void progress_bar(float fraction) = 0;
+  virtual bool collapsing_header(const std::string &label) = 0;
+  virtual bool selectable(const std::string &label, bool selected) = 0;
+  virtual bool radio_button(const std::string &label, bool active) = 0;
+  virtual int listbox(const std::string &label,
+                      int current_item,
+                      const std::vector<const char *> &items,
+                      int height_in_items) = 0;
+  virtual bool begin_tab_bar(const std::string &id) = 0;
+  virtual void end_tab_bar() = 0;
+  virtual bool begin_tab_item(const std::string &label) = 0;
+  virtual void end_tab_item() = 0;
   virtual void prepare_for_next_frame() = 0;
   virtual ~GuiBase() = default;
 };

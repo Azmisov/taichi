@@ -136,6 +136,39 @@ void GuiMetal::unindent() { ImGui::Unindent(); }
 
 void GuiMetal::progress_bar(float fraction) { ImGui::ProgressBar(fraction); }
 
+bool GuiMetal::collapsing_header(const std::string &label) {
+  return ImGui::CollapsingHeader(label.c_str());
+}
+
+bool GuiMetal::selectable(const std::string &label, bool selected) {
+  ImGui::Selectable(label.c_str(), &selected);
+  return selected;
+}
+
+bool GuiMetal::radio_button(const std::string &label, bool active) {
+  return ImGui::RadioButton(label.c_str(), active);
+}
+
+int GuiMetal::listbox(const std::string &label, int current_item,
+                      const std::vector<const char *> &items,
+                      int height_in_items) {
+  ImGui::ListBox(label.c_str(), &current_item, items.data(),
+                 static_cast<int>(items.size()), height_in_items);
+  return current_item;
+}
+
+bool GuiMetal::begin_tab_bar(const std::string &id) {
+  return ImGui::BeginTabBar(id.c_str());
+}
+
+void GuiMetal::end_tab_bar() { ImGui::EndTabBar(); }
+
+bool GuiMetal::begin_tab_item(const std::string &label) {
+  return ImGui::BeginTabItem(label.c_str());
+}
+
+void GuiMetal::end_tab_item() { ImGui::EndTabItem(); }
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 
