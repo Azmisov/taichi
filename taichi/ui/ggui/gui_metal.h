@@ -60,6 +60,11 @@ class TI_DLL_EXPORT GuiMetal final : public GuiBase {
                    float maximum) override;
   bool tree_node_push(const std::string &label) override;
   void tree_node_pop() override;
+  void separator() override;
+  void same_line() override;
+  void indent() override;
+  void unindent() override;
+  void progress_bar(float fraction) override;
 
   void prepare_for_next_frame() override;
 

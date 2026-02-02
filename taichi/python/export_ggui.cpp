@@ -137,6 +137,21 @@ struct PyGui {
   void tree_node_pop() {
     gui->tree_node_pop();
   }
+  void separator() {
+    gui->separator();
+  }
+  void same_line() {
+    gui->same_line();
+  }
+  void indent() {
+    gui->indent();
+  }
+  void unindent() {
+    gui->unindent();
+  }
+  void progress_bar(float fraction) {
+    gui->progress_bar(fraction);
+  }
   int combo(std::string label, int current_item, py::tuple items_py) {
     auto it = combo_cache_.find(label);
 
@@ -790,6 +805,11 @@ void export_ggui(py::module &m) {
       .def("drag_float", &PyGui::drag_float)
       .def("tree_node_push", &PyGui::tree_node_push)
       .def("tree_node_pop", &PyGui::tree_node_pop)
+      .def("separator", &PyGui::separator)
+      .def("same_line", &PyGui::same_line)
+      .def("indent", &PyGui::indent)
+      .def("unindent", &PyGui::unindent)
+      .def("progress_bar", &PyGui::progress_bar)
       .def("combo", &PyGui::combo);
 
   py::class_<PyScene>(m, "PyScene")

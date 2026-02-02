@@ -66,6 +66,11 @@ class TI_DLL_EXPORT Gui final : public GuiBase {
                    float maximum) override;
   bool tree_node_push(const std::string &label) override;
   void tree_node_pop() override;
+  void separator() override;
+  void same_line() override;
+  void indent() override;
+  void unindent() override;
+  void progress_bar(float fraction) override;
 
   void draw(taichi::lang::CommandList *cmd_list);
 

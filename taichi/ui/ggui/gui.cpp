@@ -279,6 +279,41 @@ void Gui::tree_node_pop() {
   ImGui::TreePop();
 }
 
+void Gui::separator() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::Separator();
+}
+
+void Gui::same_line() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::SameLine();
+}
+
+void Gui::indent() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::Indent();
+}
+
+void Gui::unindent() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::Unindent();
+}
+
+void Gui::progress_bar(float fraction) {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::ProgressBar(fraction);
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();

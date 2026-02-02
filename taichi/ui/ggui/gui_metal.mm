@@ -126,6 +126,16 @@ bool GuiMetal::tree_node_push(const std::string &label) {
 
 void GuiMetal::tree_node_pop() { ImGui::TreePop(); }
 
+void GuiMetal::separator() { ImGui::Separator(); }
+
+void GuiMetal::same_line() { ImGui::SameLine(); }
+
+void GuiMetal::indent() { ImGui::Indent(); }
+
+void GuiMetal::unindent() { ImGui::Unindent(); }
+
+void GuiMetal::progress_bar(float fraction) { ImGui::ProgressBar(fraction); }
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 
