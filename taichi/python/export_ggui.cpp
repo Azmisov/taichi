@@ -131,6 +131,12 @@ struct PyGui {
                    float maximum) {
     return gui->drag_float(label, old_value, speed, minimum, maximum);
   }
+  bool tree_node_push(std::string label) {
+    return gui->tree_node_push(label);
+  }
+  void tree_node_pop() {
+    gui->tree_node_pop();
+  }
   int combo(std::string label, int current_item, py::tuple items_py) {
     auto it = combo_cache_.find(label);
 
@@ -782,6 +788,8 @@ void export_ggui(py::module &m) {
       .def("input_float", &PyGui::input_float)
       .def("drag_int", &PyGui::drag_int)
       .def("drag_float", &PyGui::drag_float)
+      .def("tree_node_push", &PyGui::tree_node_push)
+      .def("tree_node_pop", &PyGui::tree_node_pop)
       .def("combo", &PyGui::combo);
 
   py::class_<PyScene>(m, "PyScene")

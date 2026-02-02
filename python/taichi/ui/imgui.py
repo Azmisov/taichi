@@ -196,3 +196,50 @@ class Gui:
                     window.show()
         """
         return self.gui.combo(label, current_index, items)
+
+    def tree_node_push(self, label):
+        """Begin a collapsible tree node (low-level).
+
+        Args:
+            label (str): Label for the tree node.
+
+        Returns:
+            bool: True if the node is expanded, False if collapsed.
+
+        Note:
+            You must call tree_node_pop() if this returns True.
+            Consider using tree_node() generator instead for automatic cleanup.
+        """
+        return self.gui.tree_node_push(label)
+
+    def tree_node_pop(self):
+        """End a tree node (low-level).
+
+        Only call this if tree_node_push() returned True.
+        """
+        self.gui.tree_node_pop()
+
+    def tree_node(self, label):
+        """Collapsible tree node (generator).
+
+        Use with a for loop - the body runs only if the node is expanded,
+        and tree_node_pop is called automatically.
+
+        Args:
+            label (str): Label for the tree node.
+
+        Yields:
+            Nothing, but loop body executes only if node is expanded.
+
+        Example::
+
+            for _ in gui.tree_node("Settings"):
+                gui.slider_float("Volume", volume, 0, 1)
+                for _ in gui.tree_node("Advanced"):
+                    gui.checkbox("Debug", debug)
+        """
+        if self.gui.tree_node_push(label):
+            try:
+                yield
+            finally:
+                self.gui.tree_node_pop()
