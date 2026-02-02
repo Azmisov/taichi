@@ -68,6 +68,17 @@ class TI_DLL_EXPORT GuiMetal final : public GuiBase {
   void indent() override;
   void unindent() override;
   void progress_bar(float fraction) override;
+  bool collapsing_header(const std::string &label) override;
+  bool selectable(const std::string &label, bool selected) override;
+  bool radio_button(const std::string &label, bool active) override;
+  int listbox(const std::string &label,
+              int current_item,
+              const std::vector<const char *> &items,
+              int height_in_items) override;
+  bool begin_tab_bar(const std::string &id) override;
+  void end_tab_bar() override;
+  bool begin_tab_item(const std::string &label) override;
+  void end_tab_item() override;
 
   void prepare_for_next_frame() override;
 

@@ -152,6 +152,27 @@ struct PyGui {
   void progress_bar(float fraction) {
     gui->progress_bar(fraction);
   }
+  bool collapsing_header(std::string label) {
+    return gui->collapsing_header(label);
+  }
+  bool selectable(std::string label, bool selected) {
+    return gui->selectable(label, selected);
+  }
+  bool radio_button(std::string label, bool active) {
+    return gui->radio_button(label, active);
+  }
+  bool begin_tab_bar(std::string id) {
+    return gui->begin_tab_bar(id);
+  }
+  void end_tab_bar() {
+    gui->end_tab_bar();
+  }
+  bool begin_tab_item(std::string label) {
+    return gui->begin_tab_item(label);
+  }
+  void end_tab_item() {
+    gui->end_tab_item();
+  }
   int combo(std::string label, int current_item, py::tuple items_py) {
     auto it = combo_cache_.find(label);
 
@@ -171,6 +192,30 @@ struct PyGui {
     }
     it->second.touched = true;
     return gui->combo(label, current_item, it->second.items_cstr);
+  }
+
+  int listbox(std::string label,
+              int current_item,
+              py::tuple items_py,
+              int height_in_items) {
+    // Use same cache as combo (keyed by label)
+    auto it = combo_cache_.find(label);
+
+    if (it == combo_cache_.end() || !it->second.items_tuple.is(items_py)) {
+      ComboCache cache;
+      cache.items_tuple = items_py;
+      for (auto item : items_py) {
+        cache.items_str.push_back(item.cast<std::string>());
+      }
+      for (const auto &s : cache.items_str) {
+        cache.items_cstr.push_back(s.c_str());
+      }
+      combo_cache_[label] = std::move(cache);
+      it = combo_cache_.find(label);
+    }
+    it->second.touched = true;
+    return gui->listbox(label, current_item, it->second.items_cstr,
+                        height_in_items);
   }
 
   // Called at frame end to clean up stale cache entries
@@ -818,7 +863,15 @@ void export_ggui(py::module &m) {
       .def("indent", &PyGui::indent)
       .def("unindent", &PyGui::unindent)
       .def("progress_bar", &PyGui::progress_bar)
-      .def("combo", &PyGui::combo);
+      .def("combo", &PyGui::combo)
+      .def("collapsing_header", &PyGui::collapsing_header)
+      .def("selectable", &PyGui::selectable)
+      .def("radio_button", &PyGui::radio_button)
+      .def("listbox", &PyGui::listbox)
+      .def("begin_tab_bar", &PyGui::begin_tab_bar)
+      .def("end_tab_bar", &PyGui::end_tab_bar)
+      .def("begin_tab_item", &PyGui::begin_tab_item)
+      .def("end_tab_item", &PyGui::end_tab_item);
 
   py::class_<PyScene>(m, "PyScene")
       .def(py::init<>())
