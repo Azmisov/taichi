@@ -36,12 +36,54 @@ namespace taichi::ui {
 
 using namespace taichi::lang;
 
+glm::vec2 tuple_to_vec2(pybind11::tuple t) {
+  return glm::vec2(t[0].cast<float>(), t[1].cast<float>());
+}
+
 glm::vec3 tuple_to_vec3(pybind11::tuple t) {
   return glm::vec3(t[0].cast<float>(), t[1].cast<float>(), t[2].cast<float>());
 }
 
+glm::vec4 tuple_to_vec4(pybind11::tuple t) {
+  return glm::vec4(t[0].cast<float>(), t[1].cast<float>(), t[2].cast<float>(),
+                   t[3].cast<float>());
+}
+
+glm::ivec2 tuple_to_ivec2(pybind11::tuple t) {
+  return glm::ivec2(t[0].cast<int>(), t[1].cast<int>());
+}
+
+glm::ivec3 tuple_to_ivec3(pybind11::tuple t) {
+  return glm::ivec3(t[0].cast<int>(), t[1].cast<int>(), t[2].cast<int>());
+}
+
+glm::ivec4 tuple_to_ivec4(pybind11::tuple t) {
+  return glm::ivec4(t[0].cast<int>(), t[1].cast<int>(), t[2].cast<int>(),
+                    t[3].cast<int>());
+}
+
+pybind11::tuple vec2_to_tuple(glm::vec2 v) {
+  return pybind11::make_tuple(v.x, v.y);
+}
+
 pybind11::tuple vec3_to_tuple(glm::vec3 v) {
   return pybind11::make_tuple(v.x, v.y, v.z);
+}
+
+pybind11::tuple vec4_to_tuple(glm::vec4 v) {
+  return pybind11::make_tuple(v.x, v.y, v.z, v.w);
+}
+
+pybind11::tuple ivec2_to_tuple(glm::ivec2 v) {
+  return pybind11::make_tuple(v.x, v.y);
+}
+
+pybind11::tuple ivec3_to_tuple(glm::ivec3 v) {
+  return pybind11::make_tuple(v.x, v.y, v.z);
+}
+
+pybind11::tuple ivec4_to_tuple(glm::ivec4 v) {
+  return pybind11::make_tuple(v.x, v.y, v.z, v.w);
 }
 
 // Here we convert the 2d-array to numpy array using pybind. Refs:
@@ -97,16 +139,63 @@ struct PyGui {
   int slider_int(std::string name, int old_value, int minimum, int maximum) {
     return gui->slider_int(name, old_value, minimum, maximum);
   }
+  py::tuple slider_int2(std::string name,
+                        py::tuple old_value,
+                        int minimum,
+                        int maximum) {
+    return ivec2_to_tuple(
+        gui->slider_int2(name, tuple_to_ivec2(old_value), minimum, maximum));
+  }
+  py::tuple slider_int3(std::string name,
+                        py::tuple old_value,
+                        int minimum,
+                        int maximum) {
+    return ivec3_to_tuple(
+        gui->slider_int3(name, tuple_to_ivec3(old_value), minimum, maximum));
+  }
+  py::tuple slider_int4(std::string name,
+                        py::tuple old_value,
+                        int minimum,
+                        int maximum) {
+    return ivec4_to_tuple(
+        gui->slider_int4(name, tuple_to_ivec4(old_value), minimum, maximum));
+  }
   float slider_float(std::string name,
                      float old_value,
                      float minimum,
                      float maximum) {
     return gui->slider_float(name, old_value, minimum, maximum);
   }
+  py::tuple slider_float2(std::string name,
+                          py::tuple old_value,
+                          float minimum,
+                          float maximum) {
+    return vec2_to_tuple(
+        gui->slider_float2(name, tuple_to_vec2(old_value), minimum, maximum));
+  }
+  py::tuple slider_float3(std::string name,
+                          py::tuple old_value,
+                          float minimum,
+                          float maximum) {
+    return vec3_to_tuple(
+        gui->slider_float3(name, tuple_to_vec3(old_value), minimum, maximum));
+  }
+  py::tuple slider_float4(std::string name,
+                          py::tuple old_value,
+                          float minimum,
+                          float maximum) {
+    return vec4_to_tuple(
+        gui->slider_float4(name, tuple_to_vec4(old_value), minimum, maximum));
+  }
   py::tuple color_edit_3(std::string name, py::tuple old_value) {
     glm::vec3 old_color = tuple_to_vec3(old_value);
     glm::vec3 new_color = gui->color_edit_3(name, old_color);
     return vec3_to_tuple(new_color);
+  }
+  py::tuple color_edit_4(std::string name, py::tuple old_value) {
+    glm::vec4 old_color = tuple_to_vec4(old_value);
+    glm::vec4 new_color = gui->color_edit_4(name, old_color);
+    return vec4_to_tuple(new_color);
   }
   bool button(std::string name) {
     return gui->button(name);
@@ -114,8 +203,26 @@ struct PyGui {
   int input_int(std::string label, int old_value) {
     return gui->input_int(label, old_value);
   }
+  py::tuple input_int2(std::string label, py::tuple old_value) {
+    return ivec2_to_tuple(gui->input_int2(label, tuple_to_ivec2(old_value)));
+  }
+  py::tuple input_int3(std::string label, py::tuple old_value) {
+    return ivec3_to_tuple(gui->input_int3(label, tuple_to_ivec3(old_value)));
+  }
+  py::tuple input_int4(std::string label, py::tuple old_value) {
+    return ivec4_to_tuple(gui->input_int4(label, tuple_to_ivec4(old_value)));
+  }
   float input_float(std::string label, float old_value) {
     return gui->input_float(label, old_value);
+  }
+  py::tuple input_float2(std::string label, py::tuple old_value) {
+    return vec2_to_tuple(gui->input_float2(label, tuple_to_vec2(old_value)));
+  }
+  py::tuple input_float3(std::string label, py::tuple old_value) {
+    return vec3_to_tuple(gui->input_float3(label, tuple_to_vec3(old_value)));
+  }
+  py::tuple input_float4(std::string label, py::tuple old_value) {
+    return vec4_to_tuple(gui->input_float4(label, tuple_to_vec4(old_value)));
   }
   int drag_int(std::string label,
                int old_value,
@@ -124,12 +231,60 @@ struct PyGui {
                int maximum) {
     return gui->drag_int(label, old_value, speed, minimum, maximum);
   }
+  py::tuple drag_int2(std::string label,
+                      py::tuple old_value,
+                      float speed,
+                      int minimum,
+                      int maximum) {
+    return ivec2_to_tuple(gui->drag_int2(label, tuple_to_ivec2(old_value),
+                                         speed, minimum, maximum));
+  }
+  py::tuple drag_int3(std::string label,
+                      py::tuple old_value,
+                      float speed,
+                      int minimum,
+                      int maximum) {
+    return ivec3_to_tuple(gui->drag_int3(label, tuple_to_ivec3(old_value),
+                                         speed, minimum, maximum));
+  }
+  py::tuple drag_int4(std::string label,
+                      py::tuple old_value,
+                      float speed,
+                      int minimum,
+                      int maximum) {
+    return ivec4_to_tuple(gui->drag_int4(label, tuple_to_ivec4(old_value),
+                                         speed, minimum, maximum));
+  }
   float drag_float(std::string label,
                    float old_value,
                    float speed,
                    float minimum,
                    float maximum) {
     return gui->drag_float(label, old_value, speed, minimum, maximum);
+  }
+  py::tuple drag_float2(std::string label,
+                        py::tuple old_value,
+                        float speed,
+                        float minimum,
+                        float maximum) {
+    return vec2_to_tuple(gui->drag_float2(label, tuple_to_vec2(old_value),
+                                          speed, minimum, maximum));
+  }
+  py::tuple drag_float3(std::string label,
+                        py::tuple old_value,
+                        float speed,
+                        float minimum,
+                        float maximum) {
+    return vec3_to_tuple(gui->drag_float3(label, tuple_to_vec3(old_value),
+                                          speed, minimum, maximum));
+  }
+  py::tuple drag_float4(std::string label,
+                        py::tuple old_value,
+                        float speed,
+                        float minimum,
+                        float maximum) {
+    return vec4_to_tuple(gui->drag_float4(label, tuple_to_vec4(old_value),
+                                          speed, minimum, maximum));
   }
   bool tree_node_push(std::string label) {
     return gui->tree_node_push(label);
@@ -849,13 +1004,32 @@ void export_ggui(py::module &m) {
       .def("text_colored", &PyGui::text_colored)
       .def("checkbox", &PyGui::checkbox)
       .def("slider_int", &PyGui::slider_int)
+      .def("slider_int2", &PyGui::slider_int2)
+      .def("slider_int3", &PyGui::slider_int3)
+      .def("slider_int4", &PyGui::slider_int4)
       .def("slider_float", &PyGui::slider_float)
+      .def("slider_float2", &PyGui::slider_float2)
+      .def("slider_float3", &PyGui::slider_float3)
+      .def("slider_float4", &PyGui::slider_float4)
       .def("color_edit_3", &PyGui::color_edit_3)
+      .def("color_edit_4", &PyGui::color_edit_4)
       .def("button", &PyGui::button)
       .def("input_int", &PyGui::input_int)
+      .def("input_int2", &PyGui::input_int2)
+      .def("input_int3", &PyGui::input_int3)
+      .def("input_int4", &PyGui::input_int4)
       .def("input_float", &PyGui::input_float)
+      .def("input_float2", &PyGui::input_float2)
+      .def("input_float3", &PyGui::input_float3)
+      .def("input_float4", &PyGui::input_float4)
       .def("drag_int", &PyGui::drag_int)
+      .def("drag_int2", &PyGui::drag_int2)
+      .def("drag_int3", &PyGui::drag_int3)
+      .def("drag_int4", &PyGui::drag_int4)
       .def("drag_float", &PyGui::drag_float)
+      .def("drag_float2", &PyGui::drag_float2)
+      .def("drag_float3", &PyGui::drag_float3)
+      .def("drag_float4", &PyGui::drag_float4)
       .def("tree_node_push", &PyGui::tree_node_push)
       .def("tree_node_pop", &PyGui::tree_node_pop)
       .def("separator", &PyGui::separator)
