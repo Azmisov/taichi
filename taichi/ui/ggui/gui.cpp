@@ -580,6 +580,48 @@ void Gui::end_tab_item() {
   ImGui::EndTabItem();
 }
 
+bool Gui::begin_table(const std::string &id, int columns) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::BeginTable(id.c_str(), columns);
+}
+
+void Gui::end_table() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::EndTable();
+}
+
+void Gui::table_setup_column(const std::string &label) {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::TableSetupColumn(label.c_str());
+}
+
+void Gui::table_headers_row() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::TableHeadersRow();
+}
+
+void Gui::table_next_row() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::TableNextRow();
+}
+
+bool Gui::table_next_column() {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::TableNextColumn();
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();

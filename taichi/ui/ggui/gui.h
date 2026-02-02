@@ -152,6 +152,12 @@ class TI_DLL_EXPORT Gui final : public GuiBase {
   void end_tab_bar() override;
   bool begin_tab_item(const std::string &label) override;
   void end_tab_item() override;
+  bool begin_table(const std::string &id, int columns) override;
+  void end_table() override;
+  void table_setup_column(const std::string &label) override;
+  void table_headers_row() override;
+  void table_next_row() override;
+  bool table_next_column() override;
 
   void draw(taichi::lang::CommandList *cmd_list);
 
