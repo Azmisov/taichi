@@ -55,6 +55,18 @@ class TI_DLL_EXPORT Gui final : public GuiBase {
   int combo(const std::string &label,
             int current_item,
             const std::vector<const char *> &items) override;
+  int input_int(const std::string &label, int old_value) override;
+  float input_float(const std::string &label, float old_value) override;
+  int drag_int(const std::string &label,
+               int old_value,
+               float speed,
+               int minimum,
+               int maximum) override;
+  float drag_float(const std::string &label,
+                   float old_value,
+                   float speed,
+                   float minimum,
+                   float maximum) override;
 
   void draw(taichi::lang::CommandList *cmd_list);
 

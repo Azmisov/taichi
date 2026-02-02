@@ -261,6 +261,46 @@ int Gui::combo(const std::string &label,
   return current_item;
 }
 
+int Gui::input_int(const std::string &label, int old_value) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::InputInt(label.c_str(), &old_value);
+  return old_value;
+}
+
+float Gui::input_float(const std::string &label, float old_value) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::InputFloat(label.c_str(), &old_value);
+  return old_value;
+}
+
+int Gui::drag_int(const std::string &label,
+                  int old_value,
+                  float speed,
+                  int minimum,
+                  int maximum) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::DragInt(label.c_str(), &old_value, speed, minimum, maximum);
+  return old_value;
+}
+
+float Gui::drag_float(const std::string &label,
+                      float old_value,
+                      float speed,
+                      float minimum,
+                      float maximum) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::DragFloat(label.c_str(), &old_value, speed, minimum, maximum);
+  return old_value;
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();
