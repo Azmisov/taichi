@@ -47,6 +47,11 @@ class GuiBase {
                            float maximum) = 0;
   virtual bool tree_node_push(const std::string &label) = 0;
   virtual void tree_node_pop() = 0;
+  virtual void separator() = 0;
+  virtual void same_line() = 0;
+  virtual void indent() = 0;
+  virtual void unindent() = 0;
+  virtual void progress_bar(float fraction) = 0;
   virtual void prepare_for_next_frame() = 0;
   virtual ~GuiBase() = default;
 };

@@ -255,3 +255,37 @@ class Gui:
                 yield
             finally:
                 self.gui.tree_node_pop()
+
+    def separator(self):
+        """Draw a horizontal separator line."""
+        self.gui.separator()
+
+    def same_line(self):
+        """Place the next widget on the same line as the previous one."""
+        self.gui.same_line()
+
+    @contextmanager
+    def indent(self):
+        """Indent subsequent widgets (context manager).
+
+        Example::
+
+            gui.text("Parent")
+            with gui.indent():
+                gui.text("Child 1")
+                gui.text("Child 2")
+            gui.text("Back to normal")
+        """
+        self.gui.indent()
+        try:
+            yield
+        finally:
+            self.gui.unindent()
+
+    def progress_bar(self, fraction):
+        """Display a progress bar.
+
+        Args:
+            fraction (float): Progress value between 0.0 and 1.0.
+        """
+        self.gui.progress_bar(fraction)
