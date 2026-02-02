@@ -214,6 +214,17 @@ bool Gui::button(const std::string &text) {
   return ImGui::Button(text.c_str());
 }
 
+int Gui::combo(const std::string &label,
+               int current_item,
+               const std::vector<const char *> &items) {
+  if (!initialized()) {
+    return current_item;
+  }
+  ImGui::Combo(label.c_str(), &current_item, items.data(),
+               static_cast<int>(items.size()));
+  return current_item;
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();
