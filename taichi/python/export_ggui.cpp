@@ -104,15 +104,37 @@ py::array_t<float> mat4_to_nparray(glm::mat4 mat) {
 struct PyGui {
   GuiBase *gui = nullptr;  // not owned
 
-  // Cache for combo items: label -> (tuple identity, strings, cstr_ptrs)
+  // Cache for string list items (combo, listbox): label -> cached data
   // Frame-based cleanup removes entries not used since last frame
-  struct ComboCache {
+  struct StringListCache {
     py::tuple items_tuple;                 // for identity comparison
     std::vector<std::string> items_str;    // owns the string data
     std::vector<const char *> items_cstr;  // points into items_str
     bool touched = false;                  // used this frame?
   };
-  std::unordered_map<std::string, ComboCache> combo_cache_;
+  std::unordered_map<std::string, StringListCache> string_list_cache_;
+
+  // Get cached C string pointers for a tuple of Python strings.
+  // Rebuilds cache if tuple identity changed; marks entry as touched.
+  const std::vector<const char *> &get_cached_strings_(const std::string &label,
+                                                       py::tuple items_py) {
+    auto it = string_list_cache_.find(label);
+    if (it == string_list_cache_.end() ||
+        !it->second.items_tuple.is(items_py)) {
+      StringListCache cache;
+      cache.items_tuple = items_py;
+      for (auto item : items_py) {
+        cache.items_str.push_back(item.cast<std::string>());
+      }
+      for (const auto &s : cache.items_str) {
+        cache.items_cstr.push_back(s.c_str());
+      }
+      string_list_cache_[label] = std::move(cache);
+      it = string_list_cache_.find(label);
+    }
+    it->second.touched = true;
+    return it->second.items_cstr;
+  }
 
   void begin(std::string name,
              float x,
@@ -339,55 +361,24 @@ struct PyGui {
     gui->end_tab_item();
   }
   int combo(std::string label, int current_item, py::tuple items_py) {
-    auto it = combo_cache_.find(label);
-
-    // Cache hit if same label and same tuple identity
-    if (it == combo_cache_.end() || !it->second.items_tuple.is(items_py)) {
-      // Build new cache entry
-      ComboCache cache;
-      cache.items_tuple = items_py;
-      for (auto item : items_py) {
-        cache.items_str.push_back(item.cast<std::string>());
-      }
-      for (const auto &s : cache.items_str) {
-        cache.items_cstr.push_back(s.c_str());
-      }
-      combo_cache_[label] = std::move(cache);
-      it = combo_cache_.find(label);
-    }
-    it->second.touched = true;
-    return gui->combo(label, current_item, it->second.items_cstr);
+    const auto &items = get_cached_strings_(label, items_py);
+    return gui->combo(label, current_item, items);
   }
 
   int listbox(std::string label,
               int current_item,
               py::tuple items_py,
               int height_in_items) {
-    // Use same cache as combo (keyed by label)
-    auto it = combo_cache_.find(label);
-
-    if (it == combo_cache_.end() || !it->second.items_tuple.is(items_py)) {
-      ComboCache cache;
-      cache.items_tuple = items_py;
-      for (auto item : items_py) {
-        cache.items_str.push_back(item.cast<std::string>());
-      }
-      for (const auto &s : cache.items_str) {
-        cache.items_cstr.push_back(s.c_str());
-      }
-      combo_cache_[label] = std::move(cache);
-      it = combo_cache_.find(label);
-    }
-    it->second.touched = true;
-    return gui->listbox(label, current_item, it->second.items_cstr,
-                        height_in_items);
+    const auto &items = get_cached_strings_(label, items_py);
+    return gui->listbox(label, current_item, items, height_in_items);
   }
 
   // Called at frame end to clean up stale cache entries
   void frame_end() {
-    for (auto it = combo_cache_.begin(); it != combo_cache_.end();) {
+    for (auto it = string_list_cache_.begin();
+         it != string_list_cache_.end();) {
       if (!it->second.touched) {
-        it = combo_cache_.erase(it);
+        it = string_list_cache_.erase(it);
       } else {
         it->second.touched = false;
         ++it;
