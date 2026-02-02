@@ -1,4 +1,5 @@
 
+#include <unordered_map>
 #include <vector>
 #include "pybind11/pybind11.h"
 #include <pybind11/numpy.h>
@@ -59,7 +60,18 @@ py::array_t<float> mat4_to_nparray(glm::mat4 mat) {
 }
 
 struct PyGui {
-  GuiBase *gui;  // not owned
+  GuiBase *gui = nullptr;  // not owned
+
+  // Cache for combo items: label -> (tuple identity, strings, cstr_ptrs)
+  // Frame-based cleanup removes entries not used since last frame
+  struct ComboCache {
+    py::tuple items_tuple;                 // for identity comparison
+    std::vector<std::string> items_str;    // owns the string data
+    std::vector<const char *> items_cstr;  // points into items_str
+    bool touched = false;                  // used this frame?
+  };
+  std::unordered_map<std::string, ComboCache> combo_cache_;
+
   void begin(std::string name,
              float x,
              float y,
@@ -98,6 +110,38 @@ struct PyGui {
   }
   bool button(std::string name) {
     return gui->button(name);
+  }
+  int combo(std::string label, int current_item, py::tuple items_py) {
+    auto it = combo_cache_.find(label);
+
+    // Cache hit if same label and same tuple identity
+    if (it == combo_cache_.end() || !it->second.items_tuple.is(items_py)) {
+      // Build new cache entry
+      ComboCache cache;
+      cache.items_tuple = items_py;
+      for (auto item : items_py) {
+        cache.items_str.push_back(item.cast<std::string>());
+      }
+      for (const auto &s : cache.items_str) {
+        cache.items_cstr.push_back(s.c_str());
+      }
+      combo_cache_[label] = std::move(cache);
+      it = combo_cache_.find(label);
+    }
+    it->second.touched = true;
+    return gui->combo(label, current_item, it->second.items_cstr);
+  }
+
+  // Called at frame end to clean up stale cache entries
+  void frame_end() {
+    for (auto it = combo_cache_.begin(); it != combo_cache_.end();) {
+      if (!it->second.touched) {
+        it = combo_cache_.erase(it);
+      } else {
+        it->second.touched = false;
+        ++it;
+      }
+    }
   }
 };
 
@@ -518,6 +562,7 @@ struct PyCanvas {
 
 struct PyWindow {
   std::unique_ptr<WindowBase> window{nullptr};
+  std::unique_ptr<PyGui> py_gui_{nullptr};
 
   PyWindow(Program *prog,
            std::string name,
@@ -603,6 +648,9 @@ struct PyWindow {
 
   void show() {
     window->show();
+    if (py_gui_) {
+      py_gui_->frame_end();
+    }
   }
 
   bool is_pressed(std::string button) {
@@ -642,9 +690,12 @@ struct PyWindow {
     return scene;
   }
 
-  PyGui gui() {
-    PyGui gui = {window->gui()};
-    return gui;
+  PyGui &gui() {
+    if (!py_gui_) {
+      py_gui_ = std::make_unique<PyGui>();
+      py_gui_->gui = window->gui();
+    }
+    return *py_gui_;
   }
 
   // this is so that the GUI class does not need to use any pybind related stuff
@@ -714,7 +765,8 @@ void export_ggui(py::module &m) {
       .def("slider_int", &PyGui::slider_int)
       .def("slider_float", &PyGui::slider_float)
       .def("color_edit_3", &PyGui::color_edit_3)
-      .def("button", &PyGui::button);
+      .def("button", &PyGui::button)
+      .def("combo", &PyGui::combo);
 
   py::class_<PyScene>(m, "PyScene")
       .def(py::init<>())

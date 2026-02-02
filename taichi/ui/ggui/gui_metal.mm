@@ -117,6 +117,13 @@ bool GuiMetal::button(const std::string &text) {
   return ImGui::Button(text.c_str());
 }
 
+int GuiMetal::combo(const std::string &label, int current_item,
+                    const std::vector<const char *> &items) {
+  ImGui::Combo(label.c_str(), &current_item, items.data(),
+               static_cast<int>(items.size()));
+  return current_item;
+}
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 

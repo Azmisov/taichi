@@ -46,6 +46,9 @@ class TI_DLL_EXPORT GuiMetal final : public GuiBase {
   // TODO: consider renaming this?
   glm::vec3 color_edit_3(const std::string &name, glm::vec3 old_value) override;
   bool button(const std::string &text) override;
+  int combo(const std::string &label,
+            int current_item,
+            const std::vector<const char *> &items) override;
 
   void prepare_for_next_frame() override;
 

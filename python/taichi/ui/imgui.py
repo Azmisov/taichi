@@ -128,3 +128,29 @@ class Gui:
             text (str): a line of text to be shown next to the button.
         """
         return self.gui.button(text)
+
+    def combo(self, label, current_index, items):
+        """Combo box (dropdown) for selecting from a tuple of items.
+
+        Args:
+            label (str): Label for the combo box.
+            current_index (int): Currently selected index (0-based).
+            items (tuple[str, ...]): Tuple of string options.
+
+        Returns:
+            int: The newly selected index.
+
+        Note:
+            Converting Python strings to ImGui format is cached when the same
+            tuple object is passed across frames. For best performance, define
+            options at module or class level (not inside the render loop)::
+
+                DIFFICULTIES = ("Easy", "Medium", "Hard")  # module level
+
+                while window.running:
+                    with gui.sub_window(...) as w:
+                        # Cached - same tuple object each frame
+                        idx = w.combo("Difficulty", idx, DIFFICULTIES)
+                    window.show()
+        """
+        return self.gui.combo(label, current_index, items)
