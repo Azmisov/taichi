@@ -111,6 +111,26 @@ struct PyGui {
   bool button(std::string name) {
     return gui->button(name);
   }
+  int input_int(std::string label, int old_value) {
+    return gui->input_int(label, old_value);
+  }
+  float input_float(std::string label, float old_value) {
+    return gui->input_float(label, old_value);
+  }
+  int drag_int(std::string label,
+               int old_value,
+               float speed,
+               int minimum,
+               int maximum) {
+    return gui->drag_int(label, old_value, speed, minimum, maximum);
+  }
+  float drag_float(std::string label,
+                   float old_value,
+                   float speed,
+                   float minimum,
+                   float maximum) {
+    return gui->drag_float(label, old_value, speed, minimum, maximum);
+  }
   int combo(std::string label, int current_item, py::tuple items_py) {
     auto it = combo_cache_.find(label);
 
@@ -758,6 +778,10 @@ void export_ggui(py::module &m) {
       .def("slider_float", &PyGui::slider_float)
       .def("color_edit_3", &PyGui::color_edit_3)
       .def("button", &PyGui::button)
+      .def("input_int", &PyGui::input_int)
+      .def("input_float", &PyGui::input_float)
+      .def("drag_int", &PyGui::drag_int)
+      .def("drag_float", &PyGui::drag_float)
       .def("combo", &PyGui::combo);
 
   py::class_<PyScene>(m, "PyScene")

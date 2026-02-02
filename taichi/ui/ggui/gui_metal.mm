@@ -98,6 +98,28 @@ int GuiMetal::combo(const std::string &label, int current_item,
   return current_item;
 }
 
+int GuiMetal::input_int(const std::string &label, int old_value) {
+  ImGui::InputInt(label.c_str(), &old_value);
+  return old_value;
+}
+
+float GuiMetal::input_float(const std::string &label, float old_value) {
+  ImGui::InputFloat(label.c_str(), &old_value);
+  return old_value;
+}
+
+int GuiMetal::drag_int(const std::string &label, int old_value, float speed,
+                       int minimum, int maximum) {
+  ImGui::DragInt(label.c_str(), &old_value, speed, minimum, maximum);
+  return old_value;
+}
+
+float GuiMetal::drag_float(const std::string &label, float old_value,
+                           float speed, float minimum, float maximum) {
+  ImGui::DragFloat(label.c_str(), &old_value, speed, minimum, maximum);
+  return old_value;
+}
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 

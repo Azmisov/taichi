@@ -30,6 +30,18 @@ class GuiBase {
   virtual int combo(const std::string &label,
                     int current_item,
                     const std::vector<const char *> &items) = 0;
+  virtual int input_int(const std::string &label, int old_value) = 0;
+  virtual float input_float(const std::string &label, float old_value) = 0;
+  virtual int drag_int(const std::string &label,
+                       int old_value,
+                       float speed,
+                       int minimum,
+                       int maximum) = 0;
+  virtual float drag_float(const std::string &label,
+                           float old_value,
+                           float speed,
+                           float minimum,
+                           float maximum) = 0;
   virtual void prepare_for_next_frame() = 0;
   virtual ~GuiBase() = default;
 };

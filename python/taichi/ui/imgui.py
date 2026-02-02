@@ -117,6 +117,60 @@ class Gui:
         """
         return self.gui.button(text)
 
+    def input_int(self, label, old_value):
+        """Integer input field with +/- buttons.
+
+        Args:
+            label (str): Label for the input field.
+            old_value (int): Current value.
+
+        Returns:
+            int: The updated value.
+        """
+        return self.gui.input_int(label, old_value)
+
+    def input_float(self, label, old_value):
+        """Float input field with +/- buttons.
+
+        Args:
+            label (str): Label for the input field.
+            old_value (float): Current value.
+
+        Returns:
+            float: The updated value.
+        """
+        return self.gui.input_float(label, old_value)
+
+    def drag_int(self, label, old_value, speed=1.0, minimum=0, maximum=0):
+        """Draggable integer input.
+
+        Args:
+            label (str): Label for the input.
+            old_value (int): Current value.
+            speed (float): Drag speed multiplier.
+            minimum (int): Minimum value (0 for no limit).
+            maximum (int): Maximum value (0 for no limit).
+
+        Returns:
+            int: The updated value.
+        """
+        return self.gui.drag_int(label, old_value, speed, minimum, maximum)
+
+    def drag_float(self, label, old_value, speed=1.0, minimum=0.0, maximum=0.0):
+        """Draggable float input.
+
+        Args:
+            label (str): Label for the input.
+            old_value (float): Current value.
+            speed (float): Drag speed multiplier.
+            minimum (float): Minimum value (0.0 for no limit).
+            maximum (float): Maximum value (0.0 for no limit).
+
+        Returns:
+            float: The updated value.
+        """
+        return self.gui.drag_float(label, old_value, speed, minimum, maximum)
+
     def combo(self, label, current_index, items):
         """Combo box (dropdown) for selecting from a tuple of items.
 
