@@ -274,6 +274,20 @@ glm::vec4 Gui::color_edit_4(const std::string &name, glm::vec4 old_value) {
   ImGui::ColorEdit4(name.c_str(), (float *)&old_value);
   return old_value;
 }
+glm::vec3 Gui::color_picker_3(const std::string &name, glm::vec3 old_value) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::ColorPicker3(name.c_str(), (float *)&old_value);
+  return old_value;
+}
+glm::vec4 Gui::color_picker_4(const std::string &name, glm::vec4 old_value) {
+  if (!initialized()) {
+    return old_value;
+  }
+  ImGui::ColorPicker4(name.c_str(), (float *)&old_value);
+  return old_value;
+}
 bool Gui::button(const std::string &text) {
   if (!initialized()) {
     return false;

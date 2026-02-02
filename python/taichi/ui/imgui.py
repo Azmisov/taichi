@@ -158,6 +158,26 @@ class Gui:
         """
         return self.gui.color_edit_3(text, old_value)
 
+    def color_picker(self, text, old_value):
+        """Declares a full color picker widget with color wheel/square.
+
+        Auto-detects RGB vs RGBA based on tuple size.
+
+        Args:
+            text (str): a line of text to be shown next to the picker.
+            old_value (tuple): the current color value. Can be a tuple of
+                3 floats (RGB) or 4 floats (RGBA) in [0,1].
+
+        Returns:
+            tuple: the updated color (same size as input).
+        """
+        n = len(old_value)
+        if n == 3:
+            return self.gui.color_picker_3(text, tuple(old_value))
+        if n == 4:
+            return self.gui.color_picker_4(text, tuple(old_value))
+        raise ValueError(f"color_picker expects 3 (RGB) or 4 (RGBA) components, got {n}")
+
     def button(self, text):
         """Declares a button, and returns whether or not it had just been clicked.
 
