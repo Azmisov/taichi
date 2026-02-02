@@ -360,6 +360,24 @@ struct PyGui {
   void end_tab_item() {
     gui->end_tab_item();
   }
+  bool begin_table(std::string id, int columns) {
+    return gui->begin_table(id, columns);
+  }
+  void end_table() {
+    gui->end_table();
+  }
+  void table_setup_column(std::string label) {
+    gui->table_setup_column(label);
+  }
+  void table_headers_row() {
+    gui->table_headers_row();
+  }
+  void table_next_row() {
+    gui->table_next_row();
+  }
+  bool table_next_column() {
+    return gui->table_next_column();
+  }
   int combo(std::string label, int current_item, py::tuple items_py) {
     const auto &items = get_cached_strings_(label, items_py);
     return gui->combo(label, current_item, items);
@@ -1048,7 +1066,13 @@ void export_ggui(py::module &m) {
       .def("begin_tab_bar", &PyGui::begin_tab_bar)
       .def("end_tab_bar", &PyGui::end_tab_bar)
       .def("begin_tab_item", &PyGui::begin_tab_item)
-      .def("end_tab_item", &PyGui::end_tab_item);
+      .def("end_tab_item", &PyGui::end_tab_item)
+      .def("begin_table", &PyGui::begin_table)
+      .def("end_table", &PyGui::end_table)
+      .def("table_setup_column", &PyGui::table_setup_column)
+      .def("table_headers_row", &PyGui::table_headers_row)
+      .def("table_next_row", &PyGui::table_next_row)
+      .def("table_next_column", &PyGui::table_next_column);
 
   py::class_<PyScene>(m, "PyScene")
       .def(py::init<>())

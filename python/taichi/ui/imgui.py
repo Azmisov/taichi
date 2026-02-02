@@ -559,3 +559,88 @@ class Gui:
                 yield
             finally:
                 self.gui.end_tab_item()
+
+    def begin_table(self, table_id, columns):
+        """Begin a table (low-level).
+
+        Args:
+            table_id (str): Unique identifier for the table.
+            columns (int): Number of columns.
+
+        Returns:
+            bool: True if the table is visible and should be rendered.
+
+        Note:
+            Must call end_table() if this returns True.
+            Consider using table() generator instead for automatic cleanup.
+        """
+        return self.gui.begin_table(table_id, columns)
+
+    def end_table(self):
+        """End a table (low-level).
+
+        Only call this if begin_table() returned True.
+        """
+        self.gui.end_table()
+
+    def table_setup_column(self, label):
+        """Set up a column header for the table.
+
+        Call after begin_table() and before the first row.
+
+        Args:
+            label (str): Label for the column header.
+        """
+        self.gui.table_setup_column(label)
+
+    def table_headers_row(self):
+        """Submit the header row after setting up columns.
+
+        Call after all table_setup_column() calls and before data rows.
+        """
+        self.gui.table_headers_row()
+
+    def table_next_row(self):
+        """Begin a new row in the table."""
+        self.gui.table_next_row()
+
+    def table_next_column(self):
+        """Move to the next column in the current row.
+
+        Returns:
+            bool: True if the column is visible (not clipped).
+        """
+        return self.gui.table_next_column()
+
+    def table(self, table_id, columns):
+        """Table container (generator).
+
+        Use with a for loop - the body runs only if the table is visible,
+        and end_table is called automatically.
+
+        Args:
+            table_id (str): Unique identifier for the table.
+            columns (int): Number of columns.
+
+        Yields:
+            Nothing, but loop body executes only if table is visible.
+
+        Example::
+
+            for _ in gui.table("my_table", 3):
+                gui.table_setup_column("ID")
+                gui.table_setup_column("Name")
+                gui.table_setup_column("Price")
+                gui.table_headers_row()
+
+                for item in items:
+                    gui.table_next_row()
+                    gui.table_next_column(); gui.text(str(item["id"]))
+                    gui.table_next_column(); gui.text(item["name"])
+                    gui.table_next_column(); gui.text(f"${item['price']:.2f}")
+        """
+        if self.gui.begin_table(table_id, columns):
+            try:
+                yield
+            finally:
+                self.gui.end_table()

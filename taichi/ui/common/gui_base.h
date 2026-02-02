@@ -135,6 +135,12 @@ class GuiBase {
   virtual void end_tab_bar() = 0;
   virtual bool begin_tab_item(const std::string &label) = 0;
   virtual void end_tab_item() = 0;
+  virtual bool begin_table(const std::string &id, int columns) = 0;
+  virtual void end_table() = 0;
+  virtual void table_setup_column(const std::string &label) = 0;
+  virtual void table_headers_row() = 0;
+  virtual void table_next_row() = 0;
+  virtual bool table_next_column() = 0;
   virtual void prepare_for_next_frame() = 0;
   virtual ~GuiBase() = default;
 };

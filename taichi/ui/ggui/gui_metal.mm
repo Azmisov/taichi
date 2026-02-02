@@ -314,6 +314,22 @@ bool GuiMetal::begin_tab_item(const std::string &label) {
 
 void GuiMetal::end_tab_item() { ImGui::EndTabItem(); }
 
+bool GuiMetal::begin_table(const std::string &id, int columns) {
+  return ImGui::BeginTable(id.c_str(), columns);
+}
+
+void GuiMetal::end_table() { ImGui::EndTable(); }
+
+void GuiMetal::table_setup_column(const std::string &label) {
+  ImGui::TableSetupColumn(label.c_str());
+}
+
+void GuiMetal::table_headers_row() { ImGui::TableHeadersRow(); }
+
+void GuiMetal::table_next_row() { ImGui::TableNextRow(); }
+
+bool GuiMetal::table_next_column() { return ImGui::TableNextColumn(); }
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 
