@@ -301,6 +301,20 @@ float Gui::drag_float(const std::string &label,
   return old_value;
 }
 
+bool Gui::tree_node_push(const std::string &label) {
+  if (!initialized()) {
+    return false;
+  }
+  return ImGui::TreeNode(label.c_str());
+}
+
+void Gui::tree_node_pop() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::TreePop();
+}
+
 void Gui::draw(taichi::lang::CommandList *cmd_list) {
   // Rendering
   ImGui::Render();

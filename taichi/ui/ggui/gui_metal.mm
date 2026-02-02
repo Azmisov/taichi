@@ -146,6 +146,12 @@ float GuiMetal::drag_float(const std::string &label, float old_value,
   return old_value;
 }
 
+bool GuiMetal::tree_node_push(const std::string &label) {
+  return ImGui::TreeNode(label.c_str());
+}
+
+void GuiMetal::tree_node_pop() { ImGui::TreePop(); }
+
 void GuiMetal::draw(taichi::lang::CommandList *cmd_list) {
   ImGui_ImplMetal_NewFrame(current_rpd_);
 

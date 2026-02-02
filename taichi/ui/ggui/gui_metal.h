@@ -61,6 +61,8 @@ class TI_DLL_EXPORT GuiMetal final : public GuiBase {
                    float speed,
                    float minimum,
                    float maximum) override;
+  bool tree_node_push(const std::string &label) override;
+  void tree_node_pop() override;
 
   void prepare_for_next_frame() override;
 
