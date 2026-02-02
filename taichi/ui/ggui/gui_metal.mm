@@ -78,13 +78,47 @@ int GuiMetal::slider_int(const std::string &name, int old_value, int minimum,
   ImGui::SliderInt(name.c_str(), &old_value, minimum, maximum);
   return old_value;
 }
+glm::ivec2 GuiMetal::slider_int2(const std::string &name, glm::ivec2 old_value,
+                                 int minimum, int maximum) {
+  ImGui::SliderInt2(name.c_str(), (int *)&old_value, minimum, maximum);
+  return old_value;
+}
+glm::ivec3 GuiMetal::slider_int3(const std::string &name, glm::ivec3 old_value,
+                                 int minimum, int maximum) {
+  ImGui::SliderInt3(name.c_str(), (int *)&old_value, minimum, maximum);
+  return old_value;
+}
+glm::ivec4 GuiMetal::slider_int4(const std::string &name, glm::ivec4 old_value,
+                                 int minimum, int maximum) {
+  ImGui::SliderInt4(name.c_str(), (int *)&old_value, minimum, maximum);
+  return old_value;
+}
 float GuiMetal::slider_float(const std::string &name, float old_value,
                              float minimum, float maximum) {
   ImGui::SliderFloat(name.c_str(), &old_value, minimum, maximum);
   return old_value;
 }
+glm::vec2 GuiMetal::slider_float2(const std::string &name, glm::vec2 old_value,
+                                  float minimum, float maximum) {
+  ImGui::SliderFloat2(name.c_str(), (float *)&old_value, minimum, maximum);
+  return old_value;
+}
+glm::vec3 GuiMetal::slider_float3(const std::string &name, glm::vec3 old_value,
+                                  float minimum, float maximum) {
+  ImGui::SliderFloat3(name.c_str(), (float *)&old_value, minimum, maximum);
+  return old_value;
+}
+glm::vec4 GuiMetal::slider_float4(const std::string &name, glm::vec4 old_value,
+                                  float minimum, float maximum) {
+  ImGui::SliderFloat4(name.c_str(), (float *)&old_value, minimum, maximum);
+  return old_value;
+}
 glm::vec3 GuiMetal::color_edit_3(const std::string &name, glm::vec3 old_value) {
   ImGui::ColorEdit3(name.c_str(), (float *)&old_value);
+  return old_value;
+}
+glm::vec4 GuiMetal::color_edit_4(const std::string &name, glm::vec4 old_value) {
+  ImGui::ColorEdit4(name.c_str(), (float *)&old_value);
   return old_value;
 }
 bool GuiMetal::button(const std::string &text) {
@@ -103,8 +137,44 @@ int GuiMetal::input_int(const std::string &label, int old_value) {
   return old_value;
 }
 
+glm::ivec2 GuiMetal::input_int2(const std::string &label,
+                                glm::ivec2 old_value) {
+  ImGui::InputInt2(label.c_str(), (int *)&old_value);
+  return old_value;
+}
+
+glm::ivec3 GuiMetal::input_int3(const std::string &label,
+                                glm::ivec3 old_value) {
+  ImGui::InputInt3(label.c_str(), (int *)&old_value);
+  return old_value;
+}
+
+glm::ivec4 GuiMetal::input_int4(const std::string &label,
+                                glm::ivec4 old_value) {
+  ImGui::InputInt4(label.c_str(), (int *)&old_value);
+  return old_value;
+}
+
 float GuiMetal::input_float(const std::string &label, float old_value) {
   ImGui::InputFloat(label.c_str(), &old_value);
+  return old_value;
+}
+
+glm::vec2 GuiMetal::input_float2(const std::string &label,
+                                 glm::vec2 old_value) {
+  ImGui::InputFloat2(label.c_str(), (float *)&old_value);
+  return old_value;
+}
+
+glm::vec3 GuiMetal::input_float3(const std::string &label,
+                                 glm::vec3 old_value) {
+  ImGui::InputFloat3(label.c_str(), (float *)&old_value);
+  return old_value;
+}
+
+glm::vec4 GuiMetal::input_float4(const std::string &label,
+                                 glm::vec4 old_value) {
+  ImGui::InputFloat4(label.c_str(), (float *)&old_value);
   return old_value;
 }
 
@@ -114,9 +184,48 @@ int GuiMetal::drag_int(const std::string &label, int old_value, float speed,
   return old_value;
 }
 
+glm::ivec2 GuiMetal::drag_int2(const std::string &label, glm::ivec2 old_value,
+                               float speed, int minimum, int maximum) {
+  ImGui::DragInt2(label.c_str(), (int *)&old_value, speed, minimum, maximum);
+  return old_value;
+}
+
+glm::ivec3 GuiMetal::drag_int3(const std::string &label, glm::ivec3 old_value,
+                               float speed, int minimum, int maximum) {
+  ImGui::DragInt3(label.c_str(), (int *)&old_value, speed, minimum, maximum);
+  return old_value;
+}
+
+glm::ivec4 GuiMetal::drag_int4(const std::string &label, glm::ivec4 old_value,
+                               float speed, int minimum, int maximum) {
+  ImGui::DragInt4(label.c_str(), (int *)&old_value, speed, minimum, maximum);
+  return old_value;
+}
+
 float GuiMetal::drag_float(const std::string &label, float old_value,
                            float speed, float minimum, float maximum) {
   ImGui::DragFloat(label.c_str(), &old_value, speed, minimum, maximum);
+  return old_value;
+}
+
+glm::vec2 GuiMetal::drag_float2(const std::string &label, glm::vec2 old_value,
+                                float speed, float minimum, float maximum) {
+  ImGui::DragFloat2(label.c_str(), (float *)&old_value, speed, minimum,
+                    maximum);
+  return old_value;
+}
+
+glm::vec3 GuiMetal::drag_float3(const std::string &label, glm::vec3 old_value,
+                                float speed, float minimum, float maximum) {
+  ImGui::DragFloat3(label.c_str(), (float *)&old_value, speed, minimum,
+                    maximum);
+  return old_value;
+}
+
+glm::vec4 GuiMetal::drag_float4(const std::string &label, glm::vec4 old_value,
+                                float speed, float minimum, float maximum) {
+  ImGui::DragFloat4(label.c_str(), (float *)&old_value, speed, minimum,
+                    maximum);
   return old_value;
 }
 

@@ -75,37 +75,86 @@ class Gui:
         return self.gui.checkbox(text, old_value)
 
     def slider_int(self, text, old_value, minimum, maximum):
-        """Declares a slider, and returns its newest value.
+        """Declares an integer slider, and returns its newest value.
 
         Args:
-            text (str): a line of text to be shown next to the slider
-            old_value (int) : the current value of the slider.
+            text (str): a line of text to be shown next to the slider.
+            old_value (int or tuple): the current value. Can be a scalar int
+                or a tuple of 2-4 ints for multi-component sliders.
             minimum (int): the minimum value of the slider.
             maximum (int): the maximum value of the slider.
 
         Returns:
-            int: the updated value of the slider.
+            int or tuple: the updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.slider_int2(text, tuple(old_value), minimum, maximum)
+            if n == 3:
+                return self.gui.slider_int3(text, tuple(old_value), minimum, maximum)
+            if n == 4:
+                return self.gui.slider_int4(text, tuple(old_value), minimum, maximum)
+            raise ValueError(f"slider_int expects 1-4 components, got {n}")
         return self.gui.slider_int(text, old_value, minimum, maximum)
 
     def slider_float(self, text, old_value, minimum, maximum):
-        """Declares a slider, and returns its newest value.
+        """Declares a float slider, and returns its newest value.
 
         Args:
-            text (str): a line of text to be shown next to the slider
-            old_value (float): the current value of the slider.
+            text (str): a line of text to be shown next to the slider.
+            old_value (float or tuple): the current value. Can be a scalar float
+                or a tuple of 2-4 floats for multi-component sliders.
             minimum (float): the minimum value of the slider.
             maximum (float): the maximum value of the slider.
+
+        Returns:
+            float or tuple: the updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.slider_float2(text, tuple(old_value), minimum, maximum)
+            if n == 3:
+                return self.gui.slider_float3(text, tuple(old_value), minimum, maximum)
+            if n == 4:
+                return self.gui.slider_float4(text, tuple(old_value), minimum, maximum)
+            raise ValueError(f"slider_float expects 1-4 components, got {n}")
         return self.gui.slider_float(text, old_value, minimum, maximum)
 
-    def color_edit_3(self, text, old_value):
-        """Declares a color edit palate.
+    def color_edit(self, text, old_value):
+        """Declares a color edit palette.
+
+        Auto-detects RGB vs RGBA based on tuple size.
 
         Args:
-            text (str): a line of text to be shown next to the palate.
+            text (str): a line of text to be shown next to the palette.
+            old_value (tuple): the current color value. Can be a tuple of
+                3 floats (RGB) or 4 floats (RGBA) in [0,1].
+
+        Returns:
+            tuple: the updated color (same size as input).
+        """
+        n = len(old_value)
+        if n == 3:
+            return self.gui.color_edit_3(text, tuple(old_value))
+        if n == 4:
+            return self.gui.color_edit_4(text, tuple(old_value))
+        raise ValueError(f"color_edit expects 3 (RGB) or 4 (RGBA) components, got {n}")
+
+    def color_edit_3(self, text, old_value):
+        """Declares an RGB color edit palette.
+
+        Note:
+            Prefer using :meth:`color_edit` which auto-detects RGB/RGBA.
+
+        Args:
+            text (str): a line of text to be shown next to the palette.
             old_value (Tuple[float]): the current value of the color, this \
-                should be a tuple of floats in [0,1] that indicates RGB values.
+                should be a tuple of 3 floats in [0,1] that indicates RGB values.
+
+        Returns:
+            tuple: the updated RGB color as (r, g, b).
         """
         return self.gui.color_edit_3(text, old_value)
 
@@ -122,11 +171,21 @@ class Gui:
 
         Args:
             label (str): Label for the input field.
-            old_value (int): Current value.
+            old_value (int or tuple): Current value. Can be a scalar int
+                or a tuple of 2-4 ints for multi-component inputs.
 
         Returns:
-            int: The updated value.
+            int or tuple: The updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.input_int2(label, tuple(old_value))
+            if n == 3:
+                return self.gui.input_int3(label, tuple(old_value))
+            if n == 4:
+                return self.gui.input_int4(label, tuple(old_value))
+            raise ValueError(f"input_int expects 1-4 components, got {n}")
         return self.gui.input_int(label, old_value)
 
     def input_float(self, label, old_value):
@@ -134,11 +193,21 @@ class Gui:
 
         Args:
             label (str): Label for the input field.
-            old_value (float): Current value.
+            old_value (float or tuple): Current value. Can be a scalar float
+                or a tuple of 2-4 floats for multi-component inputs.
 
         Returns:
-            float: The updated value.
+            float or tuple: The updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.input_float2(label, tuple(old_value))
+            if n == 3:
+                return self.gui.input_float3(label, tuple(old_value))
+            if n == 4:
+                return self.gui.input_float4(label, tuple(old_value))
+            raise ValueError(f"input_float expects 1-4 components, got {n}")
         return self.gui.input_float(label, old_value)
 
     def drag_int(self, label, old_value, speed=1.0, minimum=0, maximum=0):
@@ -146,14 +215,24 @@ class Gui:
 
         Args:
             label (str): Label for the input.
-            old_value (int): Current value.
+            old_value (int or tuple): Current value. Can be a scalar int
+                or a tuple of 2-4 ints for multi-component inputs.
             speed (float): Drag speed multiplier.
             minimum (int): Minimum value (0 for no limit).
             maximum (int): Maximum value (0 for no limit).
 
         Returns:
-            int: The updated value.
+            int or tuple: The updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.drag_int2(label, tuple(old_value), speed, minimum, maximum)
+            if n == 3:
+                return self.gui.drag_int3(label, tuple(old_value), speed, minimum, maximum)
+            if n == 4:
+                return self.gui.drag_int4(label, tuple(old_value), speed, minimum, maximum)
+            raise ValueError(f"drag_int expects 1-4 components, got {n}")
         return self.gui.drag_int(label, old_value, speed, minimum, maximum)
 
     def drag_float(self, label, old_value, speed=1.0, minimum=0.0, maximum=0.0):
@@ -161,14 +240,24 @@ class Gui:
 
         Args:
             label (str): Label for the input.
-            old_value (float): Current value.
+            old_value (float or tuple): Current value. Can be a scalar float
+                or a tuple of 2-4 floats for multi-component inputs.
             speed (float): Drag speed multiplier.
             minimum (float): Minimum value (0.0 for no limit).
             maximum (float): Maximum value (0.0 for no limit).
 
         Returns:
-            float: The updated value.
+            float or tuple: The updated value (same type as input).
         """
+        if isinstance(old_value, (tuple, list)):
+            n = len(old_value)
+            if n == 2:
+                return self.gui.drag_float2(label, tuple(old_value), speed, minimum, maximum)
+            if n == 3:
+                return self.gui.drag_float3(label, tuple(old_value), speed, minimum, maximum)
+            if n == 4:
+                return self.gui.drag_float4(label, tuple(old_value), speed, minimum, maximum)
+            raise ValueError(f"drag_float expects 1-4 components, got {n}")
         return self.gui.drag_float(label, old_value, speed, minimum, maximum)
 
     def combo(self, label, current_index, items):
