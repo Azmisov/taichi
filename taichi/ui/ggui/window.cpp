@@ -52,8 +52,57 @@ void Window::show() {
     draw_frame();
   }
   present_frame();
-  WindowBase::show();
-  prepare_for_next_frame();
+  WindowBase::show();  // This calls glfwPollEvents()
+
+  // Dynamically control whether ImGui sets cursor based on previous frame
+  if (config_.show_window) {
+    ImGuiIO &io = ImGui::GetIO();
+
+    // If we had user cursor control last frame, prevent ImGui from overriding
+    // it (includes both visible cursors and hidden cursor)
+    if ((current_cursor_ != nullptr || user_cursor_type_ == -1) &&
+        user_cursor_type_ >= -1) {
+      io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+    } else {
+      io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
+    }
+  }
+
+  prepare_for_next_frame();  // ImGui::NewFrame() - respects NoMouseCursorChange
+                             // flag
+
+  // Decide who controls cursor this frame
+  if (config_.show_window && user_cursor_type_ >= -1 &&
+      user_cursor_type_ < 10) {
+    ImGuiIO &io = ImGui::GetIO();
+    ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
+
+    // User or ImGui explicitly wants cursor hidden
+    if (user_cursor_type_ == -1 || imgui_cursor == ImGuiMouseCursor_None ||
+        io.MouseDrawCursor) {
+      glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+      current_cursor_ = nullptr;
+    }
+    // ImGui needs control next frame for special cursor
+    else if (imgui_cursor != ImGuiMouseCursor_Arrow || io.WantCaptureMouse) {
+      current_cursor_ = nullptr;
+    } else {
+      // We control cursor in empty space; ensure it's visible
+      glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+      GLFWcursor *desired_cursor = standard_cursors_[user_cursor_type_];
+
+      // Fall back to arrow if user cursor is nullptr (unsupported by platform)
+      if (!desired_cursor) {
+        desired_cursor = standard_cursors_[0];  // ARROW
+      }
+
+      if (desired_cursor) {
+        glfwSetCursor(glfw_window_, desired_cursor);
+        current_cursor_ = desired_cursor;
+      }
+    }
+  }
 }
 
 void Window::prepare_for_next_frame() {

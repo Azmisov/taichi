@@ -1,5 +1,7 @@
 #include "taichi/ui/common/window_base.h"
 #include "taichi/rhi/common/window_system.h"
+#include "GLFW/glfw3.h"
+#include "imgui.h"
 
 namespace taichi::ui {
 
@@ -15,6 +17,22 @@ WindowBase::WindowBase(AppConfig config) : config_(config) {
     glfwSetWindowUserPointer(glfw_window_, this);
     set_callbacks();
     last_record_time_ = glfwGetTime();
+
+    // Create standard cursors
+    // Temporarily disable error callback since some cursors may not exist on
+    // all platforms
+    GLFWerrorfun prev_error_callback = glfwSetErrorCallback(nullptr);
+    standard_cursors_[0] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    standard_cursors_[1] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+    standard_cursors_[2] = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    standard_cursors_[3] = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);
+    standard_cursors_[4] = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
+    standard_cursors_[5] = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
+    standard_cursors_[6] = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+    standard_cursors_[7] = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+    standard_cursors_[8] = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
+    standard_cursors_[9] = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR);
+    glfwSetErrorCallback(prev_error_callback);
   }
 }
 
@@ -170,6 +188,12 @@ void WindowBase::set_current_event(const Event &event) {
 
 WindowBase::~WindowBase() {
   if (config_.show_window) {
+    // Destroy cursors
+    for (int i = 0; i < 10; i++) {
+      if (standard_cursors_[i]) {
+        glfwDestroyCursor(standard_cursors_[i]);
+      }
+    }
     glfwDestroyWindow(glfw_window_);
     taichi::lang::window_system::glfw_context_release();
   }
@@ -177,6 +201,23 @@ WindowBase::~WindowBase() {
 
 GuiBase *WindowBase::gui() {
   return nullptr;
+}
+
+void WindowBase::set_cursor(int cursor_shape) {
+  CHECK_WINDOW_SHOWING;
+  if (cursor_shape < -1 || cursor_shape >= 10) {
+    TI_ERROR("Invalid cursor shape: {}. Must be -1 (reset) or 0-9.",
+             cursor_shape);
+    return;
+  }
+
+  user_cursor_type_ = cursor_shape;
+
+  if (cursor_shape == -1) {
+    // Reset to default arrow cursor
+    glfwSetCursor(glfw_window_, nullptr);
+  }
+  // Actual cursor application happens in show() to coordinate with ImGui
 }
 
 void WindowBase::key_callback(GLFWwindow *glfw_window,

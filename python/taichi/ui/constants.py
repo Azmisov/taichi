@@ -1,5 +1,7 @@
 """Key constants for :mod:`~taichi.ui`"""
 
+from taichi._lib import core as _ti_core
+
 SHIFT = "Shift"
 ALT = "Alt"
 CTRL = "Control"
@@ -60,3 +62,20 @@ NUMPAD_ENTER = "NumpadEnter"
 # Event types
 PRESS = "Press"
 RELEASE = "Release"
+
+# Cursor shapes
+try:
+    CURSOR_NONE = _ti_core.CURSOR_NONE  # Hide cursor
+    CURSOR_ARROW = _ti_core.CURSOR_ARROW
+    CURSOR_IBEAM = _ti_core.CURSOR_IBEAM
+    CURSOR_CROSSHAIR = _ti_core.CURSOR_CROSSHAIR
+    CURSOR_HAND = _ti_core.CURSOR_HAND
+    CURSOR_RESIZE_EW = _ti_core.CURSOR_RESIZE_EW
+    CURSOR_RESIZE_NS = _ti_core.CURSOR_RESIZE_NS
+    CURSOR_RESIZE_NWSE = _ti_core.CURSOR_RESIZE_NWSE
+    CURSOR_RESIZE_NESW = _ti_core.CURSOR_RESIZE_NESW
+    CURSOR_RESIZE_ALL = _ti_core.CURSOR_RESIZE_ALL
+    CURSOR_NOT_ALLOWED = _ti_core.CURSOR_NOT_ALLOWED
+except AttributeError:
+    # Fallback if GGUI is not available
+    pass

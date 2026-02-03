@@ -973,6 +973,10 @@ struct PyWindow {
     return py::make_tuple(dx, dy);
   }
 
+  void set_cursor(int cursor_shape) {
+    window->set_cursor(cursor_shape);
+  }
+
   void destroy() {
     if (window) {
       window.reset();
@@ -1003,6 +1007,7 @@ void export_ggui(py::module &m) {
       .def("get_events", &PyWindow::get_events)
       .def("get_current_event", &PyWindow::get_current_event)
       .def("set_current_event", &PyWindow::set_current_event)
+      .def("set_cursor", &PyWindow::set_cursor)
       .def("destroy", &PyWindow::destroy)
       .def("GUI", &PyWindow::gui);
 
@@ -1145,6 +1150,19 @@ void export_ggui(py::module &m) {
       .value("Line", taichi::lang::PolygonMode::Line)
       .value("Point", taichi::lang::PolygonMode::Point)
       .export_values();
+
+  // Cursor shape constants
+  m.attr("CURSOR_NONE") = py::int_(-1);  // Hide cursor
+  m.attr("CURSOR_ARROW") = py::int_(0);
+  m.attr("CURSOR_IBEAM") = py::int_(1);
+  m.attr("CURSOR_CROSSHAIR") = py::int_(2);
+  m.attr("CURSOR_HAND") = py::int_(3);
+  m.attr("CURSOR_RESIZE_EW") = py::int_(4);
+  m.attr("CURSOR_RESIZE_NS") = py::int_(5);
+  m.attr("CURSOR_RESIZE_NWSE") = py::int_(6);
+  m.attr("CURSOR_RESIZE_NESW") = py::int_(7);
+  m.attr("CURSOR_RESIZE_ALL") = py::int_(8);
+  m.attr("CURSOR_NOT_ALLOWED") = py::int_(9);
 }
 
 }  // namespace taichi::ui

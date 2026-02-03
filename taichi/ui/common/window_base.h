@@ -17,6 +17,7 @@
 #include "taichi/program/ndarray.h"
 
 struct GLFWwindow;
+struct GLFWcursor;
 
 namespace taichi::ui {
 
@@ -31,6 +32,8 @@ class WindowBase {
   std::pair<float, float> get_cursor_pos();
 
   std::pair<double, double> get_scroll_delta();
+
+  void set_cursor(int cursor_shape);
 
   std::vector<Event> get_events(EventType tag);
 
@@ -69,6 +72,12 @@ class WindowBase {
 
   std::list<Event> events_;
   Event current_event_{EventType::Any, ""};
+
+  // Cursor management
+  GLFWcursor *standard_cursors_[10]{nullptr};
+  int user_cursor_type_{-1};  // -1 = not set, else cursor shape constant
+  GLFWcursor *current_cursor_{
+      nullptr};  // Track currently set cursor to avoid redundant calls
 
  protected:
   explicit WindowBase(AppConfig config);

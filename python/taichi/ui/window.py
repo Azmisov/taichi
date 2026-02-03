@@ -154,6 +154,29 @@ class Window:
         """
         return self.window.get_scroll_delta()
 
+    def set_cursor(self, cursor_shape):
+        """Set the mouse cursor icon.
+
+        Args:
+            cursor_shape (int or None): Cursor shape constant from ti.ui.CURSOR_*
+                (e.g., ti.ui.CURSOR_CROSSHAIR, ti.ui.CURSOR_HAND).
+                Pass None or ti.ui.CURSOR_ARROW to reset to default arrow cursor.
+
+        Note:
+            When hovering over ImGui UI elements, ImGui will override the cursor
+            automatically. Your custom cursor will be restored when moving away
+            from UI elements.
+
+        Example::
+
+            >>> window.set_cursor(ti.ui.CURSOR_CROSSHAIR)
+            >>> # ... do work with crosshair cursor ...
+            >>> window.set_cursor(None)  # Reset to default
+        """
+        if cursor_shape is None:
+            cursor_shape = -1
+        return self.window.set_cursor(cursor_shape)
+
     def show(self):
         """Display this window."""
         return self.window.show()
