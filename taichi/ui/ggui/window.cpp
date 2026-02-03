@@ -240,15 +240,18 @@ std::vector<uint32_t> &Window::get_image_buffer(uint32_t &w, uint32_t &h) {
   return img_buffer;
 }
 
-bool Window::is_imgui_requesting_cursor() {
+bool Window::imgui_wants_mouse() {
   if (!config_.show_window) {
     return false;
   }
+  return ImGui::GetIO().WantCaptureMouse;
+}
 
-  ImGuiIO &io = ImGui::GetIO();
-  // Check if ImGui wants to capture mouse (hovering over UI)
-  // Use this to prevent handling drag/click events when over ImGui
-  return io.WantCaptureMouse;
+bool Window::imgui_wants_keyboard() {
+  if (!config_.show_window) {
+    return false;
+  }
+  return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 }  // namespace vulkan

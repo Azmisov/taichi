@@ -182,34 +182,45 @@ class Window:
             >>> # Mode 3: Force cursor everywhere
             >>> window.set_cursor(ti.ui.CURSOR_HAND, force=True)
 
-            >>> # Use is_imgui_requesting_cursor() to decide force behavior
-            >>> if start_drag and not window.is_imgui_requesting_cursor():
+            >>> # Use imgui_wants_mouse() to decide force behavior
+            >>> if start_drag and not window.imgui_wants_mouse():
             ...     window.set_cursor(ti.ui.CURSOR_HAND, force=True)
         """
         if cursor_shape is None:
             cursor_shape = -2  # Reset to default (let ImGui manage)
         self.window.set_cursor(cursor_shape, force)
 
-    def is_imgui_requesting_cursor(self):
-        """Check if ImGui wants to capture the mouse.
+    def imgui_wants_mouse(self):
+        """Check if ImGui wants to capture mouse input.
 
         Returns:
             bool: True if ImGui wants mouse capture (hovering over UI),
                 False otherwise.
 
-        Note:
-            Use this to prevent handling drag/click events when the mouse is
-            over ImGui UI. For cursor control, you can also use force=True to
-            override ImGui's cursor during operations like dragging.
-
         Example::
 
-            >>> if not window.is_imgui_requesting_cursor():
-            ...     # Safe to handle drag - not over ImGui UI
+            >>> if not window.imgui_wants_mouse():
+            ...     # Safe to handle mouse input - not over ImGui UI
             ...     if mouse_button_down:
             ...         drag_object()
         """
-        return self.window.is_imgui_requesting_cursor()
+        return self.window.imgui_wants_mouse()
+
+    def imgui_wants_keyboard(self):
+        """Check if ImGui wants to capture keyboard input.
+
+        Returns:
+            bool: True if ImGui wants keyboard capture (text input active),
+                False otherwise.
+
+        Example::
+
+            >>> if not window.imgui_wants_keyboard():
+            ...     # Safe to handle keyboard input
+            ...     if window.is_pressed('w'):
+            ...         move_forward()
+        """
+        return self.window.imgui_wants_keyboard()
 
     def show(self):
         """Display this window."""

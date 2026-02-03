@@ -217,10 +217,13 @@ void WindowBase::set_cursor(int cursor_shape, bool force) {
   // All cursor application happens in show() to coordinate with ImGui
 }
 
-bool WindowBase::is_imgui_requesting_cursor() {
+bool WindowBase::imgui_wants_mouse() {
   CHECK_WINDOW_SHOWING;
-  // This is implemented in the derived class (e.g., vulkan::Window)
-  // because it needs access to ImGui state
+  return false;
+}
+
+bool WindowBase::imgui_wants_keyboard() {
+  CHECK_WINDOW_SHOWING;
   return false;
 }
 

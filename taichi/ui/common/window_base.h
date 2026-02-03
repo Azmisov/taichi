@@ -35,7 +35,8 @@ class WindowBase {
 
   void set_cursor(int cursor_shape, bool force = false);
 
-  virtual bool is_imgui_requesting_cursor();
+  virtual bool imgui_wants_mouse();
+  virtual bool imgui_wants_keyboard();
 
   std::vector<Event> get_events(EventType tag);
 
