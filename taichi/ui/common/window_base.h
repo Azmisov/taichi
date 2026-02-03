@@ -35,6 +35,8 @@ class WindowBase {
 
   void set_cursor(int cursor_shape, bool force = false);
 
+  virtual bool is_imgui_requesting_cursor();
+
   std::vector<Event> get_events(EventType tag);
 
   bool get_event(EventType tag);
@@ -77,8 +79,8 @@ class WindowBase {
   GLFWcursor *standard_cursors_[10]{nullptr};
   int user_cursor_type_{-2};  // -2 = not set, -1 = hidden, 0-9 = cursor shapes
   bool user_cursor_force_{false};  // If true, force cursor even over ImGui
-  GLFWcursor *current_cursor_{
-      nullptr};  // Track currently set cursor to avoid redundant calls
+  int applied_cursor_type_{
+      -2};  // Last applied state: -2=imgui, -1=hidden, 0-9=shape
 
  protected:
   explicit WindowBase(AppConfig config);

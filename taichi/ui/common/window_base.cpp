@@ -214,12 +214,14 @@ void WindowBase::set_cursor(int cursor_shape, bool force) {
 
   user_cursor_type_ = cursor_shape;
   user_cursor_force_ = force;
+  // All cursor application happens in show() to coordinate with ImGui
+}
 
-  if (cursor_shape == -1) {
-    // Reset to default arrow cursor
-    glfwSetCursor(glfw_window_, nullptr);
-  }
-  // Actual cursor application happens in show() to coordinate with ImGui
+bool WindowBase::is_imgui_requesting_cursor() {
+  CHECK_WINDOW_SHOWING;
+  // This is implemented in the derived class (e.g., vulkan::Window)
+  // because it needs access to ImGui state
+  return false;
 }
 
 void WindowBase::key_callback(GLFWwindow *glfw_window,

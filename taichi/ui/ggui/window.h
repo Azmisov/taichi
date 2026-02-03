@@ -41,6 +41,7 @@ class Window final : public WindowBase {
   CanvasBase *get_canvas() override;
   SceneBase *get_scene() override;
   GuiBase *gui() override;
+  bool is_imgui_requesting_cursor() override;
 
   std::pair<uint32_t, uint32_t> get_window_shape() override;
 

@@ -181,10 +181,35 @@ class Window:
 
             >>> # Mode 3: Force cursor everywhere
             >>> window.set_cursor(ti.ui.CURSOR_HAND, force=True)
+
+            >>> # Use is_imgui_requesting_cursor() to decide force behavior
+            >>> if start_drag and not window.is_imgui_requesting_cursor():
+            ...     window.set_cursor(ti.ui.CURSOR_HAND, force=True)
         """
         if cursor_shape is None:
             cursor_shape = -2  # Reset to default (let ImGui manage)
-        return self.window.set_cursor(cursor_shape, force)
+        self.window.set_cursor(cursor_shape, force)
+
+    def is_imgui_requesting_cursor(self):
+        """Check if ImGui wants to capture the mouse.
+
+        Returns:
+            bool: True if ImGui wants mouse capture (hovering over UI),
+                False otherwise.
+
+        Note:
+            Use this to prevent handling drag/click events when the mouse is
+            over ImGui UI. For cursor control, you can also use force=True to
+            override ImGui's cursor during operations like dragging.
+
+        Example::
+
+            >>> if not window.is_imgui_requesting_cursor():
+            ...     # Safe to handle drag - not over ImGui UI
+            ...     if mouse_button_down:
+            ...         drag_object()
+        """
+        return self.window.is_imgui_requesting_cursor()
 
     def show(self):
         """Display this window."""

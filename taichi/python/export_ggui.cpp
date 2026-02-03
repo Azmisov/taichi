@@ -977,6 +977,10 @@ struct PyWindow {
     window->set_cursor(cursor_shape, force);
   }
 
+  bool is_imgui_requesting_cursor() {
+    return window->is_imgui_requesting_cursor();
+  }
+
   void destroy() {
     if (window) {
       window.reset();
@@ -1008,6 +1012,7 @@ void export_ggui(py::module &m) {
       .def("get_current_event", &PyWindow::get_current_event)
       .def("set_current_event", &PyWindow::set_current_event)
       .def("set_cursor", &PyWindow::set_cursor)
+      .def("is_imgui_requesting_cursor", &PyWindow::is_imgui_requesting_cursor)
       .def("destroy", &PyWindow::destroy)
       .def("GUI", &PyWindow::gui);
 

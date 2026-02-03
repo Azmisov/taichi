@@ -54,56 +54,46 @@ void Window::show() {
   present_frame();
   WindowBase::show();  // glfwPollEvents()
 
-  // Early exit if window not showing or user hasn't set cursor
-  if (!config_.show_window || user_cursor_type_ < -1 ||
-      user_cursor_type_ >= 10) {
-    prepare_for_next_frame();
-    return;
-  }
+  // Apply custom cursor from set_cursor
+  if (config_.show_window) {
+    ImGuiIO &io = ImGui::GetIO();
 
-  ImGuiIO &io = ImGui::GetIO();
-
-  // Toggle NoMouseCursorChange based on previous frame state
-  bool had_control = (current_cursor_ != nullptr || user_cursor_type_ == -1);
-  if (had_control) {
-    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-  } else {
-    io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
-  }
-
-  prepare_for_next_frame();  // ImGui::NewFrame()
-
-  // Check if ImGui needs control of cursor
-  bool use_user_cursor = true;
-  if (!user_cursor_force_) {
-    ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
-    bool imgui_wants_hidden =
-        (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor);
-    bool imgui_wants_special =
-        (imgui_cursor != ImGuiMouseCursor_Arrow || io.WantCaptureMouse);
-    use_user_cursor = !imgui_wants_hidden && !imgui_wants_special;
-  }
-
-  // Apply cursor
-  if (use_user_cursor) {
-    // Use user's cursor
-    if (user_cursor_type_ == -1) {
-      glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-      current_cursor_ = nullptr;
-    } else {
-      glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-      GLFWcursor *cursor = standard_cursors_[user_cursor_type_];
-      if (!cursor)
-        cursor = standard_cursors_[0];  // Fallback to arrow
-      if (cursor) {
-        glfwSetCursor(glfw_window_, cursor);
-        current_cursor_ = cursor;
-      }
+    // Decide if we're using user cursor or letting ImGui control
+    int effective_type = user_cursor_type_;
+    if (effective_type != -2 && !user_cursor_force_ &&
+        (io.WantCaptureMouse || io.MouseDrawCursor ||
+         ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow)) {
+      // ImGui requesting control, or wants to render custom cursor
+      effective_type = -2;
     }
-  } else {
-    // Let ImGui handle cursor
-    current_cursor_ = nullptr;
+
+    // Only apply changes if state changed
+    if (effective_type != applied_cursor_type_) {
+      if (effective_type == -2) {
+        // Let ImGui handle cursor
+        io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
+      } else {
+        // Block ImGui from handling cursor
+        io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+        if (effective_type == -1) {
+          // Hide cursor
+          glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        } else {
+          // Show custom cursor
+          GLFWcursor *cursor = standard_cursors_[effective_type];
+          if (!cursor)
+            cursor = standard_cursors_[0];  // Fallback to arrow
+          if (cursor) {
+            glfwSetCursor(glfw_window_, cursor);
+            glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+          }
+        }
+      }
+      applied_cursor_type_ = effective_type;
+    }
   }
+
+  prepare_for_next_frame();
 }
 
 void Window::prepare_for_next_frame() {
@@ -248,6 +238,17 @@ std::vector<uint32_t> &Window::get_image_buffer(uint32_t &w, uint32_t &h) {
     prepare_for_next_frame();
   }
   return img_buffer;
+}
+
+bool Window::is_imgui_requesting_cursor() {
+  if (!config_.show_window) {
+    return false;
+  }
+
+  ImGuiIO &io = ImGui::GetIO();
+  // Check if ImGui wants to capture mouse (hovering over UI)
+  // Use this to prevent handling drag/click events when over ImGui
+  return io.WantCaptureMouse;
 }
 
 }  // namespace vulkan
