@@ -65,6 +65,7 @@ RELEASE = "Release"
 
 # Cursor shapes
 try:
+    CURSOR_DEFAULT = _ti_core.CURSOR_DEFAULT  # Reset to default (ImGui manages)
     CURSOR_NONE = _ti_core.CURSOR_NONE  # Hide cursor
     CURSOR_ARROW = _ti_core.CURSOR_ARROW
     CURSOR_IBEAM = _ti_core.CURSOR_IBEAM

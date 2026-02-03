@@ -203,15 +203,17 @@ GuiBase *WindowBase::gui() {
   return nullptr;
 }
 
-void WindowBase::set_cursor(int cursor_shape) {
+void WindowBase::set_cursor(int cursor_shape, bool force) {
   CHECK_WINDOW_SHOWING;
-  if (cursor_shape < -1 || cursor_shape >= 10) {
-    TI_ERROR("Invalid cursor shape: {}. Must be -1 (reset) or 0-9.",
-             cursor_shape);
+  if (cursor_shape < -2 || cursor_shape >= 10) {
+    TI_ERROR(
+        "Invalid cursor shape: {}. Must be -2 (default), -1 (hide), or 0-9.",
+        cursor_shape);
     return;
   }
 
   user_cursor_type_ = cursor_shape;
+  user_cursor_force_ = force;
 
   if (cursor_shape == -1) {
     // Reset to default arrow cursor

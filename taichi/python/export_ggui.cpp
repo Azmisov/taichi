@@ -973,8 +973,8 @@ struct PyWindow {
     return py::make_tuple(dx, dy);
   }
 
-  void set_cursor(int cursor_shape) {
-    window->set_cursor(cursor_shape);
+  void set_cursor(int cursor_shape, bool force = false) {
+    window->set_cursor(cursor_shape, force);
   }
 
   void destroy() {
@@ -1152,7 +1152,8 @@ void export_ggui(py::module &m) {
       .export_values();
 
   // Cursor shape constants
-  m.attr("CURSOR_NONE") = py::int_(-1);  // Hide cursor
+  m.attr("CURSOR_DEFAULT") = py::int_(-2);  // Reset to default (ImGui manages)
+  m.attr("CURSOR_NONE") = py::int_(-1);     // Hide cursor
   m.attr("CURSOR_ARROW") = py::int_(0);
   m.attr("CURSOR_IBEAM") = py::int_(1);
   m.attr("CURSOR_CROSSHAIR") = py::int_(2);

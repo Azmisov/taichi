@@ -154,28 +154,37 @@ class Window:
         """
         return self.window.get_scroll_delta()
 
-    def set_cursor(self, cursor_shape):
+    def set_cursor(self, cursor_shape=None, force=False):
         """Set the mouse cursor icon.
+
+        Three modes of operation:
+        1. No args: ImGui controls cursor completely (default behavior)
+        2. cursor_shape only: Set preference, but ImGui can override when hovering UI
+        3. cursor_shape + force=True: Force cursor even over ImGui UI
 
         Args:
             cursor_shape (int or None): Cursor shape constant from ti.ui.CURSOR_*
                 (e.g., ti.ui.CURSOR_CROSSHAIR, ti.ui.CURSOR_HAND).
-                Pass None or ti.ui.CURSOR_ARROW to reset to default arrow cursor.
-
-        Note:
-            When hovering over ImGui UI elements, ImGui will override the cursor
-            automatically. Your custom cursor will be restored when moving away
-            from UI elements.
+                - None or ti.ui.CURSOR_DEFAULT: Reset to default (ImGui manages)
+                - ti.ui.CURSOR_NONE: Hide cursor completely
+                - ti.ui.CURSOR_ARROW, CURSOR_HAND, etc.: Show specific cursor
+            force (bool): If True, force cursor even when hovering ImGui UI.
+                If False (default), ImGui can override when hovering UI elements.
 
         Example::
 
+            >>> # Mode 1: ImGui controls completely
+            >>> window.set_cursor()  # or set_cursor(ti.ui.CURSOR_DEFAULT)
+
+            >>> # Mode 2: Preference (default) - ImGui can override
             >>> window.set_cursor(ti.ui.CURSOR_CROSSHAIR)
-            >>> # ... do work with crosshair cursor ...
-            >>> window.set_cursor(None)  # Reset to default
+
+            >>> # Mode 3: Force cursor everywhere
+            >>> window.set_cursor(ti.ui.CURSOR_HAND, force=True)
         """
         if cursor_shape is None:
-            cursor_shape = -1
-        return self.window.set_cursor(cursor_shape)
+            cursor_shape = -2  # Reset to default (let ImGui manage)
+        return self.window.set_cursor(cursor_shape, force)
 
     def show(self):
         """Display this window."""

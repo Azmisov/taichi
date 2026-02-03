@@ -52,56 +52,57 @@ void Window::show() {
     draw_frame();
   }
   present_frame();
-  WindowBase::show();  // This calls glfwPollEvents()
+  WindowBase::show();  // glfwPollEvents()
 
-  // Dynamically control whether ImGui sets cursor based on previous frame
-  if (config_.show_window) {
-    ImGuiIO &io = ImGui::GetIO();
-
-    // If we had user cursor control last frame, prevent ImGui from overriding
-    // it (includes both visible cursors and hidden cursor)
-    if ((current_cursor_ != nullptr || user_cursor_type_ == -1) &&
-        user_cursor_type_ >= -1) {
-      io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-    } else {
-      io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
-    }
+  // Early exit if window not showing or user hasn't set cursor
+  if (!config_.show_window || user_cursor_type_ < -1 ||
+      user_cursor_type_ >= 10) {
+    prepare_for_next_frame();
+    return;
   }
 
-  prepare_for_next_frame();  // ImGui::NewFrame() - respects NoMouseCursorChange
-                             // flag
+  ImGuiIO &io = ImGui::GetIO();
 
-  // Decide who controls cursor this frame
-  if (config_.show_window && user_cursor_type_ >= -1 &&
-      user_cursor_type_ < 10) {
-    ImGuiIO &io = ImGui::GetIO();
+  // Toggle NoMouseCursorChange based on previous frame state
+  bool had_control = (current_cursor_ != nullptr || user_cursor_type_ == -1);
+  if (had_control) {
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+  } else {
+    io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
+  }
+
+  prepare_for_next_frame();  // ImGui::NewFrame()
+
+  // Check if ImGui needs control of cursor
+  bool use_user_cursor = true;
+  if (!user_cursor_force_) {
     ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
+    bool imgui_wants_hidden =
+        (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor);
+    bool imgui_wants_special =
+        (imgui_cursor != ImGuiMouseCursor_Arrow || io.WantCaptureMouse);
+    use_user_cursor = !imgui_wants_hidden && !imgui_wants_special;
+  }
 
-    // User or ImGui explicitly wants cursor hidden
-    if (user_cursor_type_ == -1 || imgui_cursor == ImGuiMouseCursor_None ||
-        io.MouseDrawCursor) {
+  // Apply cursor
+  if (use_user_cursor) {
+    // Use user's cursor
+    if (user_cursor_type_ == -1) {
       glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
       current_cursor_ = nullptr;
-    }
-    // ImGui needs control next frame for special cursor
-    else if (imgui_cursor != ImGuiMouseCursor_Arrow || io.WantCaptureMouse) {
-      current_cursor_ = nullptr;
     } else {
-      // We control cursor in empty space; ensure it's visible
       glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-      GLFWcursor *desired_cursor = standard_cursors_[user_cursor_type_];
-
-      // Fall back to arrow if user cursor is nullptr (unsupported by platform)
-      if (!desired_cursor) {
-        desired_cursor = standard_cursors_[0];  // ARROW
-      }
-
-      if (desired_cursor) {
-        glfwSetCursor(glfw_window_, desired_cursor);
-        current_cursor_ = desired_cursor;
+      GLFWcursor *cursor = standard_cursors_[user_cursor_type_];
+      if (!cursor)
+        cursor = standard_cursors_[0];  // Fallback to arrow
+      if (cursor) {
+        glfwSetCursor(glfw_window_, cursor);
+        current_cursor_ = cursor;
       }
     }
+  } else {
+    // Let ImGui handle cursor
+    current_cursor_ = nullptr;
   }
 }
 
