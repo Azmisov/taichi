@@ -1,4 +1,5 @@
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 #include "pybind11/pybind11.h"
@@ -7,6 +8,7 @@
 
 #include "taichi/common/interface.h"
 #include "taichi/common/core.h"
+#include "taichi/rhi/common/window_system.h"
 
 namespace py = pybind11;
 
@@ -1005,6 +1007,80 @@ struct PyWindow {
   }
 };
 
+struct MonitorInfo {
+  std::optional<std::string> name;
+  int x;
+  int y;
+  int width;
+  int height;
+  int work_x;
+  int work_y;
+  int work_width;
+  int work_height;
+  float scale_x;
+  float scale_y;
+  int refresh_rate;
+  bool is_primary;
+};
+
+#ifdef TI_WITH_GLFW
+py::list get_monitors() {
+  // Ensure GLFW is initialized
+  if (!taichi::lang::window_system::glfw_context_acquire()) {
+    throw std::runtime_error("Failed to initialize GLFW");
+  }
+
+  py::list result;
+
+  int monitor_count;
+  GLFWmonitor **monitors = glfwGetMonitors(&monitor_count);
+  GLFWmonitor *primary = glfwGetPrimaryMonitor();
+
+  for (int i = 0; i < monitor_count; i++) {
+    GLFWmonitor *monitor = monitors[i];
+    MonitorInfo info;
+
+    // Name
+    const char *name = glfwGetMonitorName(monitor);
+    info.name = name ? std::optional<std::string>(name) : std::nullopt;
+
+    // Position
+    glfwGetMonitorPos(monitor, &info.x, &info.y);
+
+    // Video mode (resolution and refresh rate)
+    const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+    if (mode) {
+      info.width = mode->width;
+      info.height = mode->height;
+      info.refresh_rate = mode->refreshRate;
+    } else {
+      info.width = 0;
+      info.height = 0;
+      info.refresh_rate = 0;
+    }
+
+    // Work area (excludes taskbar/dock)
+    glfwGetMonitorWorkarea(monitor, &info.work_x, &info.work_y,
+                           &info.work_width, &info.work_height);
+
+    // Content scale (DPI)
+    glfwGetMonitorContentScale(monitor, &info.scale_x, &info.scale_y);
+
+    // Is primary
+    info.is_primary = (monitor == primary);
+
+    result.append(info);
+  }
+
+  taichi::lang::window_system::glfw_context_release();
+  return result;
+}
+#else
+py::list get_monitors() {
+  throw std::runtime_error("GLFW not available");
+}
+#endif
+
 void export_ggui(py::module &m) {
   m.attr("GGUI_AVAILABLE") = py::bool_(true);
 
@@ -1177,6 +1253,32 @@ void export_ggui(py::module &m) {
       .value("Line", taichi::lang::PolygonMode::Line)
       .value("Point", taichi::lang::PolygonMode::Point)
       .export_values();
+
+  // MonitorInfo struct
+  py::class_<MonitorInfo>(m, "MonitorInfo")
+      .def_readonly("name", &MonitorInfo::name)
+      .def_readonly("x", &MonitorInfo::x)
+      .def_readonly("y", &MonitorInfo::y)
+      .def_readonly("width", &MonitorInfo::width)
+      .def_readonly("height", &MonitorInfo::height)
+      .def_readonly("work_x", &MonitorInfo::work_x)
+      .def_readonly("work_y", &MonitorInfo::work_y)
+      .def_readonly("work_width", &MonitorInfo::work_width)
+      .def_readonly("work_height", &MonitorInfo::work_height)
+      .def_readonly("scale_x", &MonitorInfo::scale_x)
+      .def_readonly("scale_y", &MonitorInfo::scale_y)
+      .def_readonly("refresh_rate", &MonitorInfo::refresh_rate)
+      .def_readonly("is_primary", &MonitorInfo::is_primary)
+      .def("__repr__", [](const MonitorInfo &m) {
+        std::string name_str = m.name ? ("'" + *m.name + "'") : "None";
+        return "<MonitorInfo " + name_str + " " + std::to_string(m.width) +
+               "x" + std::to_string(m.height) + " @ " + std::to_string(m.x) +
+               "," + std::to_string(m.y) + (m.is_primary ? " (primary)" : "") +
+               ">";
+      });
+
+  m.def("get_monitors", &get_monitors,
+        "Get information about all connected monitors");
 
   // Cursor shape constants
   m.attr("CURSOR_DEFAULT") = py::int_(-2);  // Reset to default (ImGui manages)
