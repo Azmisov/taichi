@@ -82,6 +82,7 @@ class WindowBase {
   bool user_cursor_force_{false};  // If true, force cursor even over ImGui
   int applied_cursor_type_{
       -2};  // Last applied state: -2=imgui, -1=hidden, 0-9=shape
+  bool applied_cursor_force_{false};  // Last applied force flag
 
  protected:
   explicit WindowBase(AppConfig config);

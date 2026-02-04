@@ -68,7 +68,8 @@ void Window::show() {
     }
 
     // Only apply changes if state changed
-    if (effective_type != applied_cursor_type_) {
+    if (effective_type != applied_cursor_type_ ||
+        user_cursor_force_ != applied_cursor_force_) {
       if (effective_type == -2) {
         // Let ImGui handle cursor
         io.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
@@ -90,6 +91,7 @@ void Window::show() {
         }
       }
       applied_cursor_type_ = effective_type;
+      applied_cursor_force_ = user_cursor_force_;
     }
   }
 
