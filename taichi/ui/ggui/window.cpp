@@ -88,6 +88,7 @@ void Window::show() {
             glfwSetCursor(glfw_window_, cursor);
             glfwSetInputMode(glfw_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
           }
+          // If cursor is still null (unsupported on platform), silently fail
         }
       }
       applied_cursor_type_ = effective_type;

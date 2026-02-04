@@ -48,11 +48,9 @@ class InputHandler {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
       if (action == GLFW_PRESS) {
         left_mouse_down_ = true;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
       }
       if (action == GLFW_RELEASE) {
         left_mouse_down_ = false;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
       }
     }
     if (action == GLFW_PRESS) {
