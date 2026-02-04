@@ -143,6 +143,10 @@ class TI_DLL_EXPORT Gui final : public GuiBase {
   void same_line() override;
   void indent() override;
   void unindent() override;
+  void push_item_width(float width) override;
+  void pop_item_width() override;
+  void set_next_item_width(float width) override;
+  glm::vec2 calc_text_size(const std::string &text) override;
   void progress_bar(float fraction) override;
   bool collapsing_header(const std::string &label) override;
   bool selectable(const std::string &label, bool selected) override;

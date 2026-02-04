@@ -123,6 +123,10 @@ class GuiBase {
   virtual void same_line() = 0;
   virtual void indent() = 0;
   virtual void unindent() = 0;
+  virtual void push_item_width(float width) = 0;
+  virtual void pop_item_width() = 0;
+  virtual void set_next_item_width(float width) = 0;
+  virtual glm::vec2 calc_text_size(const std::string &text) = 0;
   virtual void progress_bar(float fraction) = 0;
   virtual bool collapsing_header(const std::string &label) = 0;
   virtual bool selectable(const std::string &label, bool selected) = 0;

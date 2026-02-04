@@ -391,6 +391,44 @@ class Gui:
         finally:
             self.gui.unindent()
 
+    @contextmanager
+    def item_width(self, width):
+        """Set width for subsequent items (context manager).
+
+        Args:
+            width (float): Width in pixels. Use negative values for special modes:
+                - width > 0: width in pixels
+                - width < 0: align to right edge minus abs(width) pixels
+
+        Example::
+
+            with gui.item_width(200):
+                value = gui.slider_float("Slider", value, 0, 1)
+                value2 = gui.slider_float("Slider2", value2, 0, 1)
+        """
+        self.gui.push_item_width(width)
+        try:
+            yield
+        finally:
+            self.gui.pop_item_width()
+
+    def set_next_item_width(self, width):
+        """Set width for the next item only.
+
+        Args:
+            width (float): Width in pixels. Use negative values for special modes:
+                - width > 0: width in pixels
+                - width < 0: align to right edge minus abs(width) pixels
+
+        Example::
+
+            gui.set_next_item_width(150)
+            value = gui.slider_float("Narrow", value, 0, 1)
+            # Next slider uses default width
+            value2 = gui.slider_float("Normal", value2, 0, 1)
+        """
+        self.gui.set_next_item_width(width)
+
     def progress_bar(self, fraction):
         """Display a progress bar.
 
@@ -398,6 +436,24 @@ class Gui:
             fraction (float): Progress value between 0.0 and 1.0.
         """
         self.gui.progress_bar(fraction)
+
+    def calc_text_size(self, text):
+        """Calculate the size of text without rendering it.
+
+        Useful for layout calculations and custom widget positioning.
+
+        Args:
+            text (str): The text to measure.
+
+        Returns:
+            tuple: (width, height) in pixels.
+
+        Example::
+
+            width, height = gui.calc_text_size("Hello, World!")
+            gui.set_next_item_width(width + 20)  # Add some padding
+        """
+        return self.gui.calc_text_size(text)
 
     def collapsing_header(self, label):
         """A collapsible header that reveals content when expanded.

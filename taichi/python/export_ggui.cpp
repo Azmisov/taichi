@@ -336,6 +336,19 @@ struct PyGui {
   void unindent() {
     gui->unindent();
   }
+  void push_item_width(float width) {
+    gui->push_item_width(width);
+  }
+  void pop_item_width() {
+    gui->pop_item_width();
+  }
+  void set_next_item_width(float width) {
+    gui->set_next_item_width(width);
+  }
+  py::tuple calc_text_size(std::string text) {
+    glm::vec2 size = gui->calc_text_size(text);
+    return py::make_tuple(size.x, size.y);
+  }
   void progress_bar(float fraction) {
     gui->progress_bar(fraction);
   }
@@ -1072,6 +1085,10 @@ void export_ggui(py::module &m) {
       .def("same_line", &PyGui::same_line)
       .def("indent", &PyGui::indent)
       .def("unindent", &PyGui::unindent)
+      .def("push_item_width", &PyGui::push_item_width)
+      .def("pop_item_width", &PyGui::pop_item_width)
+      .def("set_next_item_width", &PyGui::set_next_item_width)
+      .def("calc_text_size", &PyGui::calc_text_size)
       .def("progress_bar", &PyGui::progress_bar)
       .def("combo", &PyGui::combo)
       .def("collapsing_header", &PyGui::collapsing_header)

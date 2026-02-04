@@ -547,6 +547,35 @@ void Gui::unindent() {
   ImGui::Unindent();
 }
 
+void Gui::push_item_width(float width) {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::PushItemWidth(width);
+}
+
+void Gui::pop_item_width() {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::PopItemWidth();
+}
+
+void Gui::set_next_item_width(float width) {
+  if (!initialized()) {
+    return;
+  }
+  ImGui::SetNextItemWidth(width);
+}
+
+glm::vec2 Gui::calc_text_size(const std::string &text) {
+  if (!initialized()) {
+    return glm::vec2(0.0f, 0.0f);
+  }
+  ImVec2 size = ImGui::CalcTextSize(text.c_str());
+  return glm::vec2(size.x, size.y);
+}
+
 void Gui::progress_bar(float fraction) {
   if (!initialized()) {
     return;
